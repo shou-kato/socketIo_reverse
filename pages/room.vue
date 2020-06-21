@@ -3,8 +3,8 @@
     p  ゲームルームIDはこちらです {{ roomId }}
     button(@click="createRoom") ルームIDを作成する
     button(@click="gameStart") ゲームを開始する
-    P(v-if="turn == 1") black
-    p(v-else) white
+    //- P(v-if="turn == 1") black
+    //- p(v-else) white
     input(v-model="inputText")
     canvas( id="canvas" width="1000" height="1000" )
 </template>
@@ -40,6 +40,11 @@ export default {
     this.socket.on('sendBord', (a) => {
       this.bord = a
       this.pushStone()
+    })
+    this.socket.on('sendTurn', (turn, gameFlag) => {
+      this.turn = turn
+      console.log((this.gameFlag = gameFlag))
+      console.log('あいうえお')
     })
   },
   methods: {
@@ -95,15 +100,10 @@ export default {
         const y = e.clientY - rect.top
         const xCoordinate = Math.floor(x / 50)
         const yCoordinate = Math.floor(y / 50)
-        // if (
-        //   this.bord[yCoordinate][xCoordinate] === 3 ||
-        //   this.bord[yCoordinate][xCoordinate] === 1 ||
-        //   this.bord[yCoordinate][xCoordinate] === -1
-        // ) {
-        //   return 0
-        // }
+        if (!this.gameFlag) {
+          return
+        }
         this.bord[yCoordinate][xCoordinate] = this.turn
-        console.log(this.turn)
         this.invertStone(yCoordinate, xCoordinate, 0, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 0, -1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 1, 0, this.turn)
@@ -112,20 +112,28 @@ export default {
         this.invertStone(yCoordinate, xCoordinate, 1, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, -1, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 1, -1, this.turn)
-        console.log(this.count)
         if (this.count === 0) {
           this.bord[yCoordinate][xCoordinate] = 0
           this.count = 0
           return 0
+          // 石をひっくり返せた場合
         } else {
           this.count = 0
         }
         this.pushStone()
         this.turn *= -1
-        // this.socket.emit('getBord', this.bord)
-        // console.log(this.roomId)
-        // this.socket.emit('getBord', this.bord, this.roomId)
-        this.socket.emit('sendId', this.bord, this.inputText)
+        this.socket.emit(
+          'sendId',
+          this.bord,
+          this.inputText,
+          this.turn,
+          this.gameFlag
+        )
+        // 修正必要
+        setTimeout(() => {
+          console.log('a')
+          this.gameFlag = false
+        }, 5000)
       })
     },
     /**
@@ -139,7 +147,8 @@ export default {
       if (this.bord[y + dy][x + dx] === c) {
         this.bord[y][x] = c
         return 1
-      } else if (this.bord[y + dy][x + dx] === -c) {
+      }
+      if (this.bord[y + dy][x + dx] === -c) {
         const n = this.invertStone(y + dy, x + dx, dy, dx, c)
         if (n === 0) {
           return 0
@@ -147,8 +156,6 @@ export default {
         this.bord[y][x] = c
         this.count += 1
         return n + 1
-      } else {
-        return 0
       }
     },
     createRoom() {
@@ -156,10 +163,10 @@ export default {
       this.socket.on('getRoomId', (id) => {
         this.roomId = id
       })
-      // this.socket.emit('joinRoom', this.roomId)
     },
     gameStart() {
       console.log('game')
+      this.gameFlag = true
     }
   }
 }

@@ -35,46 +35,37 @@ async function start() {
 
   // ソケットの作成
   const io = socket(server)
-
   // ルームIDの生成
-  const roomingId = () => {
-    const length = 4
-    const charset =
-      'abcdefghijklmnopqrstuvwxyz' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789'
-    const passwordGenerator = () => {
-      let password = ''
-      for (let i = 0; i < length; i++) {
-        password += charset[Math.floor(Math.random() * charset.length)]
-      }
-      const includeAllTypes =
-        /[a-z]/.test(password) &&
-        /[A-Z]/.test(password) &&
-        /[0-9]/.test(password)
-      return includeAllTypes ? password : passwordGenerator()
-    }
-    return passwordGenerator()
-  }
-  const num = 0
+  // const roomingId = () => {
+  //   const length = 4
+  //   const charset =
+  //     'abcdefghijklmnopqrstuvwxyz' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789'
+  //   const passwordGenerator = () => {
+  //     let password = ''
+  //     for (let i = 0; i < length; i++) {
+  //       password += charset[Math.floor(Math.random() * charset.length)]
+  //     }
+  //     const includeAllTypes =
+  //       /[a-z]/.test(password) &&
+  //       /[A-Z]/.test(password) &&
+  //       /[0-9]/.test(password)
+  //     return includeAllTypes ? password : passwordGenerator()
+  //   }
+  //   return passwordGenerator()
+  // }
   // 接続された時の処理
   io.sockets.on('connection', (socket) => {
     // 接続完了を通知
     console.log(`${socket.id}`)
     socket.emit('connected', socket.id)
-    // socket.on('getBord', (bord, roomId) => {
-    //   console.log(roomId)
-    //   // socket.broadcast.emit('sendBord', bord)
-    // })
     socket.on('createRoomId', () => {
       console.log('createしました')
       socket.emit('getRoomId', socket.id)
     })
-    // socket.to(roomId).emit('sendBord', bord)
-    // 石を置いたときに
-    //  相手のidを送信する
-    //  emitして、次はbordを送信する
-    socket.on('sendId', (bord, inputText) => {
-      io.sockets.to(inputText).emit('sendBord', bord);
 
+    socket.on('sendId', (bord, inputText, turn, gameFlag) => {
+      io.emit('sendTurn', turn, gameFlag)
+      io.sockets.to(inputText).emit('sendBord', bord);
     })
   })
 }
