@@ -64,8 +64,8 @@ async function start() {
     })
 
     socket.on('sendId', (bord, inputText, turn, gameFlag) => {
-      io.emit('sendTurn', turn, gameFlag)
-      io.sockets.to(inputText).emit('sendBord', bord);
+      io.sockets.to(inputText).emit('sendTurn', turn, gameFlag)
+      io.sockets.to(inputText).emit('sendBord', bord)
     })
   })
 }

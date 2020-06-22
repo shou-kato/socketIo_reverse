@@ -43,7 +43,9 @@ export default {
     })
     this.socket.on('sendTurn', (turn, gameFlag) => {
       this.turn = turn
+      this.gameFlag = gameFlag
     })
+    console.log(this.gameFlag)
   },
   methods: {
     init() {
@@ -99,9 +101,6 @@ export default {
         if (!this.gameFlag) {
           return
         }
-        if (this.bord[yCoordinate][xCoordinate] === this.turn) {
-          return
-        }
         // すでに同じ色では無くて、置いた値が 1 or -1なら早期リターン
         if (
           this.bord[yCoordinate][xCoordinate] === 1 ||
@@ -136,10 +135,7 @@ export default {
           this.gameFlag
         )
         // 修正必要
-        setTimeout(() => {
-          console.log('a')
-          this.gameFlag = false
-        }, 5000)
+        console.log((this.gameFlag = false))
       })
     },
     /**
