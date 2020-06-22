@@ -3,8 +3,8 @@
     p  ゲームルームIDはこちらです {{ roomId }}
     button(@click="createRoom") ルームIDを作成する
     button(@click="gameStart") ゲームを開始する
-    //- P(v-if="turn == 1") black
-    //- p(v-else) white
+    P(v-if="turn == 1") black
+    p(v-else) white
     input(v-model="inputText")
     canvas( id="canvas" width="1000" height="1000" )
 </template>
@@ -43,8 +43,6 @@ export default {
     })
     this.socket.on('sendTurn', (turn, gameFlag) => {
       this.turn = turn
-      console.log((this.gameFlag = gameFlag))
-      console.log('あいうえお')
     })
   },
   methods: {
@@ -101,6 +99,16 @@ export default {
         const xCoordinate = Math.floor(x / 50)
         const yCoordinate = Math.floor(y / 50)
         if (!this.gameFlag) {
+          return
+        }
+        if (this.bord[yCoordinate][xCoordinate] === this.turn) {
+          return
+        }
+        // すでに同じ色では無くて、置いた値が 1 or -1なら早期リターン
+        if (
+          this.bord[yCoordinate][xCoordinate] === 1 ||
+          this.bord[yCoordinate][xCoordinate] === -1
+        ) {
           return
         }
         this.bord[yCoordinate][xCoordinate] = this.turn
