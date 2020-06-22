@@ -94,10 +94,8 @@ export default {
       // 座標取得
       canvas.addEventListener('click', (e) => {
         const rect = e.target.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        const y = e.clientY - rect.top
-        const xCoordinate = Math.floor(x / 50)
-        const yCoordinate = Math.floor(y / 50)
+        const xCoordinate = Math.floor((e.clientX - rect.left) / 50)
+        const yCoordinate = Math.floor((e.clientY - rect.top) / 50)
         if (!this.gameFlag) {
           return
         }
