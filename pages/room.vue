@@ -1,11 +1,9 @@
 <template lang="pug">
   div
-    p  ゲームルームIDはこちらです {{ roomId }}
-    button(@click="createRoom") ルームIDを作成する
+    h2 {{ $store.state.roomId }}  
     button(@click="gameStart") ゲームを開始する
     P(v-if="turn == 1") black
     p(v-else) white
-    input(v-model="inputText")
     canvas( id="canvas" width="1000" height="1000" )
 </template>
 <script>
@@ -27,8 +25,6 @@ export default {
       ],
       turn: 1,
       socket: io(),
-      roomId: '',
-      inputText: '',
       count: 0,
       gameFlag: false
     }
@@ -36,16 +32,17 @@ export default {
   mounted() {
     this.init()
     this.mainProcess()
-    this.socket.on('connected', (socketId) => {})
-    this.socket.on('sendBord', (a) => {
-      this.bord = a
-      this.pushStone()
+    this.socket.on('connected', () => {
+      console.log('接続が確認されました')
     })
-    this.socket.on('sendTurn', (turn, gameFlag) => {
+    this.socket.emit('joinRoom', this.$store.state.roomId)
+    this.socket.on('getBord', (bord, turn, gameFlag) => {
+      this.bord = bord
       this.turn = turn
       this.gameFlag = gameFlag
+      this.pushStone()
+      console.log('getしました')
     })
-    console.log(this.gameFlag)
   },
   methods: {
     init() {
@@ -98,6 +95,8 @@ export default {
         const rect = e.target.getBoundingClientRect()
         const xCoordinate = Math.floor((e.clientX - rect.left) / 50)
         const yCoordinate = Math.floor((e.clientY - rect.top) / 50)
+
+        // ゲームフラッグがfalseならreturn
         if (!this.gameFlag) {
           return
         }
@@ -127,15 +126,16 @@ export default {
         }
         this.pushStone()
         this.turn *= -1
-        this.socket.emit(
-          'sendId',
-          this.bord,
-          this.inputText,
-          this.turn,
-          this.gameFlag
-        )
-        // 修正必要
-        console.log((this.gameFlag = false))
+        // ゲームのボードの状態を相手に送信
+        //   this.socket.emit(
+        //     'sendId',
+        //     this.bord,
+        //     this.inputText,
+        //     this.turn,
+        //     this.gameFlag
+        //   )
+        this.socket.emit('sendBord', this.bord, this.turn, this.gameFlag)
+        this.gameFlag = false
       })
     },
     /**
@@ -160,15 +160,8 @@ export default {
         return n + 1
       }
     },
-    createRoom() {
-      this.socket.emit('createRoomId')
-      this.socket.on('getRoomId', (id) => {
-        this.roomId = id
-      })
-    },
     gameStart() {
-      console.log('game')
-      this.gameFlag = true
+      console.log((this.gameFlag = true))
     }
   }
 }

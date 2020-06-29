@@ -33,39 +33,53 @@ async function start() {
     badge: true
   })
 
+  // ルームIDの生成
+  const roomingId = () => {
+    const length = 6
+    const charset =
+      'abcdefghijklmnopqrstuvwxyz' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789'
+    const passwordGenerator = () => {
+      let password = ''
+      for (let i = 0; i < length; i++) {
+        password += charset[Math.floor(Math.random() * charset.length)]
+      }
+      const includeAllTypes =
+        /[a-z]/.test(password) &&
+        /[A-Z]/.test(password) &&
+        /[0-9]/.test(password)
+      return includeAllTypes ? password : passwordGenerator()
+    }
+    return passwordGenerator()
+  }
+
+  const waitingRoom = []
+
   // ソケットの作成
   const io = socket(server)
-  // ルームIDの生成
-  // const roomingId = () => {
-  //   const length = 4
-  //   const charset =
-  //     'abcdefghijklmnopqrstuvwxyz' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789'
-  //   const passwordGenerator = () => {
-  //     let password = ''
-  //     for (let i = 0; i < length; i++) {
-  //       password += charset[Math.floor(Math.random() * charset.length)]
-  //     }
-  //     const includeAllTypes =
-  //       /[a-z]/.test(password) &&
-  //       /[A-Z]/.test(password) &&
-  //       /[0-9]/.test(password)
-  //     return includeAllTypes ? password : passwordGenerator()
-  //   }
-  //   return passwordGenerator()
-  // }
   // 接続された時の処理
   io.sockets.on('connection', (socket) => {
     // 接続完了を通知
-    console.log(`${socket.id}`)
     socket.emit('connected', socket.id)
     socket.on('createRoomId', () => {
       console.log('createしました')
       socket.emit('getRoomId', socket.id)
     })
+    socket.on('joinRoom', (roomId) => {
+      socket.join(roomId)
+      socket.on('sendBord', (bord, turn, gameFlag) => {
+        gameFlag = true
+        io.to(roomId).emit('getBord', bord, turn, gameFlag)
+      })
+    })
 
-    socket.on('sendId', (bord, inputText, turn, gameFlag) => {
-      io.sockets.to(inputText).emit('sendTurn', turn, gameFlag)
-      io.sockets.to(inputText).emit('sendBord', bord)
+    // socket.on('sendId', (bord, inputText, turn, gameFlag) => {
+    //   io.sockets.to(inputText).emit('sendTurn', turn, meFlag)
+    //   io.sockets.to(inputText).emit('sendBord', bord)ga
+    // })
+    socket.emit('hoge2', waitingRoom)
+    socket.on('hoge', (id) => {
+      waitingRoom.push(roomingId())
+      socket.emit('hoge1', waitingRoom)
     })
   })
 }

@@ -1,6 +1,8 @@
 <template lang="pug">
   div
+    h1 オンラインオセロゲーム
     button(@click='createRoom') オセロを始める
+    button(@click='wait')
 </template>
 
 <script>
@@ -19,6 +21,9 @@ export default {
   methods: {
     createRoom() {
       this.$router.push('/room')
+    },
+    wait() {
+      this.$router.push('/waiting-room')
     }
   }
 }
