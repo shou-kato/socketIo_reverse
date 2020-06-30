@@ -34,8 +34,8 @@ export default {
     this.mainProcess()
     this.socket.on('connected', () => {
       console.log('接続が確認されました')
+      this.socket.emit('joinRoom', this.$store.state.roomId)
     })
-    this.socket.emit('joinRoom', this.$store.state.roomId)
     this.socket.on('getBord', (bord, turn, gameFlag) => {
       this.bord = bord
       this.turn = turn
