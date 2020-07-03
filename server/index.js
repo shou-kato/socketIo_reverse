@@ -54,6 +54,8 @@ async function start() {
 
   const waitingRoom = []
 
+  const test = [{}]
+
   // ソケットの作成
   const io = socket(server)
   // 接続された時の処理
@@ -66,16 +68,11 @@ async function start() {
     })
     socket.on('joinRoom', (roomId) => {
       socket.join(roomId)
-      socket.on('sendBord', (bord, turn, gameFlag) => {
-        gameFlag = true
-        io.to(roomId).emit('getBord', bord, turn, gameFlag)
+      socket.on('sendBord', (bord, turn) => {
+        socket.broadcast.to(roomId).emit('getBord', bord, turn)
       })
     })
 
-    // socket.on('sendId', (bord, inputText, turn, gameFlag) => {
-    //   io.sockets.to(inputText).emit('sendTurn', turn, meFlag)
-    //   io.sockets.to(inputText).emit('sendBord', bord)ga
-    // })
     socket.emit('hoge2', waitingRoom)
     socket.on('hoge', (id) => {
       waitingRoom.push(roomingId())

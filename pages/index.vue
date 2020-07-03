@@ -2,7 +2,7 @@
   div
     h1 オンラインオセロゲーム
     button(@click='createRoom') オセロを始める
-    button(@click='wait')
+    button(@click='wait') 待機ルームにGO
 </template>
 
 <script>

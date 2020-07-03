@@ -35,11 +35,12 @@ export default {
     this.socket.on('connected', () => {
       console.log('接続が確認されました')
       this.socket.emit('joinRoom', this.$store.state.roomId)
+      console.log('joinしました')
     })
-    this.socket.on('getBord', (bord, turn, gameFlag) => {
+    this.socket.on('getBord', (bord, turn) => {
       this.bord = bord
       this.turn = turn
-      this.gameFlag = gameFlag
+      this.gameFlag = true
       this.pushStone()
       console.log('getしました')
     })
@@ -126,14 +127,6 @@ export default {
         }
         this.pushStone()
         this.turn *= -1
-        // ゲームのボードの状態を相手に送信
-        //   this.socket.emit(
-        //     'sendId',
-        //     this.bord,
-        //     this.inputText,
-        //     this.turn,
-        //     this.gameFlag
-        //   )
         this.socket.emit('sendBord', this.bord, this.turn, this.gameFlag)
         this.gameFlag = false
       })
@@ -162,6 +155,26 @@ export default {
     },
     gameStart() {
       console.log((this.gameFlag = true))
+    },
+    roomingId() {
+      // ルームIDの生成
+      const length = 6
+      const charset =
+        'abcdefghijklmnopqrstuvwxyz' +
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+        '0123456789'
+      const passwordGenerator = () => {
+        let password = ''
+        for (let i = 0; i < length; i++) {
+          password += charset[Math.floor(Math.random() * charset.length)]
+        }
+        const includeAllTypes =
+          /[a-z]/.test(password) &&
+          /[A-Z]/.test(password) &&
+          /[0-9]/.test(password)
+        return includeAllTypes ? password : passwordGenerator()
+      }
+      return passwordGenerator()
     }
   }
 }
