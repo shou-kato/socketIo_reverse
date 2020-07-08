@@ -1,10 +1,24 @@
-<template lang="pug">
-  div
-    h2 {{ $store.state.roomId }}  
-    button(@click="gameStart") ゲームを開始する
-    P(v-if="turn == 1") black
-    p(v-else) white
-    canvas( id="canvas" width="1000" height="1000" )
+<template>
+  <v-main>
+    <v-container class="fill-height" fluid>
+      <v-row align="center" justify="center">
+        <v-col class="text-center">
+          <v-btn class="mx-auto" text @click="gameStart"
+            >ゲームを開始する</v-btn
+          >
+          <v-card outlined class="mx-auto" max-width="200" max-height="200">
+            <v-card-text>
+              <p v-if="turn === 1">あなたの石はblackです</p>
+              <p v-else>あなたの石はwhiteです</p>
+            </v-card-text>
+          </v-card>
+          <v-card flat>
+            <canvas id="canvas" width="500" height="500"></canvas>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-main>
 </template>
 <script>
 import io from 'socket.io-client'
@@ -179,4 +193,10 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+.square {
+  width: 100px;
+  height: 100px;
+  background: black;
+}
+</style>

@@ -1,30 +1,13 @@
-<template lang="pug">
-  div
-    h1 オンラインオセロゲーム
-    button(@click='createRoom') オセロを始める
-    button(@click='wait') 待機ルームにGO
+<template>
+  <v-main>
+    <v-container class="fill-height" fluid>
+      <v-row align="center" justify="center">
+        <v-col class="text-center">
+          <v-card class="mx-auto" max-width="400" max-height="300" outlined>
+            <v-btn text link nuxt to="/waiting-room">待機ルームへ</v-btn>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-main>
 </template>
-
-<script>
-import io from 'socket.io-client'
-export default {
-  data() {
-    return {
-      socket: io()
-    }
-  },
-  mounted() {
-    this.socket.on('connected', () => {
-      console.log('コネクトしました')
-    })
-  },
-  methods: {
-    createRoom() {
-      this.$router.push('/room')
-    },
-    wait() {
-      this.$router.push('/waiting-room')
-    }
-  }
-}
-</script>

@@ -1,6 +1,16 @@
 <template>
   <div>
-    <nuxt />
+    <v-app id="inspire">
+      <v-app-bar app color="indigo" dark>
+        <v-toolbar-title>reverse</v-toolbar-title>
+      </v-app-bar>
+      <nuxt />
+      <v-footer color="indigo" app>
+        <span class="white--text mx-auto"
+          >&copy; {{ new Date().getFullYear() }} higeqq</span
+        >
+      </v-footer>
+    </v-app>
   </div>
 </template>
 
