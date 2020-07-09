@@ -25,7 +25,7 @@ import io from 'socket.io-client'
 export default {
   data() {
     return {
-      bord: [
+      reverseBord: [
         [3, 3, 3, 3, 3, 3, 3, 3],
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
@@ -47,16 +47,12 @@ export default {
     this.init()
     this.mainProcess()
     this.socket.on('connected', () => {
-      console.log('接続が確認されました')
       this.socket.emit('joinRoom', this.$store.state.roomId)
-      console.log('joinしました')
     })
-    this.socket.on('getBord', (bord, turn) => {
-      this.bord = bord
-      this.turn = turn
+    this.socket.on('getBord', (reverseBord) => {
+      this.reverseBord = reverseBord
       this.gameFlag = true
       this.pushStone()
-      console.log('getしました')
     })
   },
   methods: {
@@ -81,7 +77,7 @@ export default {
           ctx.beginPath()
           ctx.arc(50 * x + 25, 50 * y + 25, 20, 0, 2 * Math.PI, false)
 
-          switch (this.bord[y][x]) {
+          switch (this.reverseBord[y][x]) {
             case -1:
               ctx.fillStyle = 'blue'
               break
@@ -117,12 +113,12 @@ export default {
         }
         // すでに同じ色では無くて、置いた値が 1 or -1なら早期リターン
         if (
-          this.bord[yCoordinate][xCoordinate] === 1 ||
-          this.bord[yCoordinate][xCoordinate] === -1
+          this.reverseBord[yCoordinate][xCoordinate] === 1 ||
+          this.reverseBord[yCoordinate][xCoordinate] === -1
         ) {
           return
         }
-        this.bord[yCoordinate][xCoordinate] = this.turn
+        this.reverseBord[yCoordinate][xCoordinate] = this.turn
         this.invertStone(yCoordinate, xCoordinate, 0, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 0, -1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 1, 0, this.turn)
@@ -132,7 +128,7 @@ export default {
         this.invertStone(yCoordinate, xCoordinate, -1, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 1, -1, this.turn)
         if (this.count === 0) {
-          this.bord[yCoordinate][xCoordinate] = 0
+          this.reverseBord[yCoordinate][xCoordinate] = 0
           this.count = 0
           return 0
           // 石をひっくり返せた場合
@@ -141,7 +137,7 @@ export default {
         }
         this.pushStone()
         this.turn *= -1
-        this.socket.emit('sendBord', this.bord, this.turn, this.gameFlag)
+        this.socket.emit('sendBord', this.reverseBord)
         this.gameFlag = false
       })
     },
@@ -153,22 +149,22 @@ export default {
      * @param {Number} c  色
      */
     invertStone(y, x, dy, dx, c) {
-      if (this.bord[y + dy][x + dx] === c) {
-        this.bord[y][x] = c
+      if (this.reverseBord[y + dy][x + dx] === c) {
+        this.reverseBord[y][x] = c
         return 1
       }
-      if (this.bord[y + dy][x + dx] === -c) {
+      if (this.reverseBord[y + dy][x + dx] === -c) {
         const n = this.invertStone(y + dy, x + dx, dy, dx, c)
         if (n === 0) {
           return 0
         }
-        this.bord[y][x] = c
+        this.reverseBord[y][x] = c
         this.count += 1
         return n + 1
       }
     },
     gameStart() {
-      console.log((this.gameFlag = true))
+      this.gameFlag = true
     },
     roomingId() {
       // ルームIDの生成
@@ -193,10 +189,3 @@ export default {
   }
 }
 </script>
-<style>
-.square {
-  width: 100px;
-  height: 100px;
-  background: black;
-}
-</style>

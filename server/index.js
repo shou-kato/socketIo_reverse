@@ -54,7 +54,7 @@ async function start() {
 
   const waitingRoom = []
 
-  const test = [{}]
+  // const length = [{}]
 
   // ソケットの作成
   const io = socket(server)
@@ -63,21 +63,21 @@ async function start() {
     // 接続完了を通知
     socket.emit('connected', socket.id)
     socket.on('createRoomId', () => {
-      console.log('createしました')
       socket.emit('getRoomId', socket.id)
     })
     socket.on('joinRoom', (roomId) => {
       socket.join(roomId)
-      socket.on('sendBord', (bord, turn) => {
-        socket.broadcast.to(roomId).emit('getBord', bord, turn)
+      socket.on('sendBord', (reverseBord) => {
+        socket.broadcast.to(roomId).emit('getBord', reverseBord)
       })
     })
 
-    socket.emit('hoge2', waitingRoom)
-    socket.on('hoge', (id) => {
+    socket.emit('getWaitingRoom', waitingRoom)
+    socket.on('createWaitingId', () => {
       waitingRoom.push(roomingId())
-      socket.emit('hoge1', waitingRoom)
+      socket.emit('getWaitingId', waitingRoom)
     })
+    socket.on('disconnect', () => {})
   })
 }
 start()
