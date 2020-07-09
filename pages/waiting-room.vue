@@ -49,7 +49,8 @@ export default {
     },
     selectRoom(item) {
       const index = this.waitingRoom.indexOf(item)
-      alert(this.waitingRoom[index])
+      alert(typeof index)
+      this.socket.emit('selectJoinRoom', this.waitingRoom[index])
       this.$store.commit('allocation', this.waitingRoom[index])
       this.$router.push('./room')
     }

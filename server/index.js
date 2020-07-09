@@ -7,6 +7,7 @@ const socket = require('socket.io')
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
+const e = require('express')
 config.dev = process.env.NODE_ENV !== 'production'
 
 async function start() {
@@ -54,7 +55,7 @@ async function start() {
 
   const waitingRoom = []
 
-  // const length = [{}]
+  const readyNumber = {}
 
   // ソケットの作成
   const io = socket(server)
@@ -66,10 +67,20 @@ async function start() {
       socket.emit('getRoomId', socket.id)
     })
     socket.on('joinRoom', (roomId) => {
+      console.log(readyNumber[roomId])
       socket.join(roomId)
       socket.on('sendBord', (reverseBord) => {
         socket.broadcast.to(roomId).emit('getBord', reverseBord)
       })
+    })
+
+    // ルームの人数を数える
+    socket.on('selectJoinRoom', (selectRoomId) => {
+      if (!readyNumber[selectRoomId]) {
+        return (readyNumber[selectRoomId] = 1)
+      } else {
+        return (readyNumber[selectRoomId] += 1)
+      }
     })
 
     socket.emit('getWaitingRoom', waitingRoom)
@@ -77,7 +88,6 @@ async function start() {
       waitingRoom.push(roomingId())
       socket.emit('getWaitingId', waitingRoom)
     })
-    socket.on('disconnect', () => {})
   })
 }
 start()
