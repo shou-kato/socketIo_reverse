@@ -7,7 +7,6 @@ const socket = require('socket.io')
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
-const e = require('express')
 config.dev = process.env.NODE_ENV !== 'production'
 
 async function start() {
@@ -55,7 +54,9 @@ async function start() {
 
   const waitingRoom = []
 
-  const readyNumber = {}
+  // const readyNumber = {}
+
+  const roomNumber = []
 
   // ソケットの作成
   const io = socket(server)
@@ -67,21 +68,34 @@ async function start() {
       socket.emit('getRoomId', socket.id)
     })
     socket.on('joinRoom', (roomId) => {
-      console.log(readyNumber[roomId])
+      // todo
+      // クライアントがサーバーに人数をリクエスト。人数を配列で。
+      // サーバーはクライアントから受け取ったルームの名前を受け取り、
+      // ルーム名を参照して、人数を数える。そして、その値を配列に入れていく。
       socket.join(roomId)
       socket.on('sendBord', (reverseBord) => {
         socket.broadcast.to(roomId).emit('getBord', reverseBord)
       })
     })
 
-    // ルームの人数を数える
-    socket.on('selectJoinRoom', (selectRoomId) => {
-      if (!readyNumber[selectRoomId]) {
-        return (readyNumber[selectRoomId] = 1)
-      } else {
-        return (readyNumber[selectRoomId] += 1)
+    socket.on('reqRoomNumber', () => {
+      for (let i = 0; i < waitingRoom.length; i++) {
+        roomNumber[i] = socket.adapter.rooms[waitingRoom[i].length]
       }
+      roomNumber.forEach((element) => {
+        console.log(element)
+      })
+      socket.emit('sendRoomNumber', roomNumber)
     })
+
+    // ルームの人数を数える
+    // socket.on('selectJoinRoom', (selectRoomId) => {
+    //   if (!readyNumber[selectRoomId]) {
+    //     return (readyNumber[selectRoomId] = 1)
+    //   } else {
+    //     return (readyNumber[selectRoomId] += 1)
+    //   }
+    // })
 
     socket.emit('getWaitingRoom', waitingRoom)
     socket.on('createWaitingId', () => {

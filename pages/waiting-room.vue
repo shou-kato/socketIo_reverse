@@ -31,7 +31,8 @@ export default {
   data() {
     return {
       socket: io(),
-      waitingRoom: []
+      waitingRoom: [],
+      roomNumber: []
     }
   },
   mounted() {
@@ -39,6 +40,9 @@ export default {
     this.socket.on('getWaitingRoom', (waitingRoom) => {
       this.waitingRoom = waitingRoom
     })
+    this.socket.emit('reqRoomNumber')
+
+    this.socket.on('sendRoomNumber', (sNumber) => {})
   },
   methods: {
     getRoomId() {
@@ -50,7 +54,7 @@ export default {
     selectRoom(item) {
       const index = this.waitingRoom.indexOf(item)
       alert(typeof index)
-      this.socket.emit('selectJoinRoom', this.waitingRoom[index])
+      // this.socket.emit('selectJoinRoom', this.waitingRoom[index])
       this.$store.commit('allocation', this.waitingRoom[index])
       this.$router.push('./room')
     }
