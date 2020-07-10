@@ -22,6 +22,9 @@
           </v-row>
         </v-col>
       </v-row>
+      <v-card v-for="(items, j) in roomNumber" :key="j">
+        <v-card-text>{{ items }}</v-card-text>
+      </v-card>
     </v-container>
   </v-main>
 </template>
@@ -41,8 +44,9 @@ export default {
       this.waitingRoom = waitingRoom
     })
     this.socket.emit('reqRoomNumber')
-
-    this.socket.on('sendRoomNumber', (sNumber) => {})
+    this.socket.on('sendRoomNumber', (sNumber) => {
+      this.roomNumber = sNumber.map((s) => s.length)
+    })
   },
   methods: {
     getRoomId() {

@@ -24,7 +24,6 @@ async function start() {
 
   // Give nuxt middleware to express
   app.use(nuxt.render)
-
   // Listen the server
   // サーバ情報を保存しておく
   const server = app.listen(port, host)
@@ -80,11 +79,11 @@ async function start() {
 
     socket.on('reqRoomNumber', () => {
       for (let i = 0; i < waitingRoom.length; i++) {
-        roomNumber[i] = socket.adapter.rooms[waitingRoom[i].length]
+        roomNumber[i] = socket.adapter.rooms[waitingRoom[i]]
       }
-      roomNumber.forEach((element) => {
+       roomNumber.forEach((element) => {
         console.log(element)
-      })
+       })
       socket.emit('sendRoomNumber', roomNumber)
     })
 
