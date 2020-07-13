@@ -22,9 +22,16 @@
           </v-row>
         </v-col>
       </v-row>
-      <v-card v-for="(items, j) in roomNumber" :key="j">
-        <v-card-text>{{ items }}</v-card-text>
-      </v-card>
+      <v-row>
+        <v-col v-for="(items, j) in roomNumber" :key="j">
+          <v-card width="140" height="80">
+            <v-card-text
+              ><p>ルーム{{ j + 1 }}の人数</p>
+              <p>{{ items }}</p>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-container>
   </v-main>
 </template>
