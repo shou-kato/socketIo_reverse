@@ -7,7 +7,6 @@ const socket = require('socket.io')
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
-const e = require('express')
 config.dev = process.env.NODE_ENV !== 'production'
 
 async function start() {
@@ -51,22 +50,14 @@ async function start() {
     }
     return passwordGenerator()
   }
-
-  const waitingRoom = []
-
-  // const readyNumber = {}
-
-  const roomNumber = []
+  const dutyRoom = []
 
   // ソケットの作成
   const io = socket(server)
   // 接続された時の処理
   io.sockets.on('connection', (socket) => {
     // 接続完了を通知
-    socket.emit('connected', socket.id)
-    socket.on('createRoomId', () => {
-      socket.emit('getRoomId', socket.id)
-    })
+    socket.emit('connected')
     socket.on('joinRoom', (roomId) => {
       socket.join(roomId)
       socket.on('sendBord', (reverseBord) => {
@@ -74,25 +65,28 @@ async function start() {
       })
     })
 
-    socket.on('reqRoomNumber', () => {
-      for (let i = 0; i < waitingRoom.length; i++) {
-         roomNumber[i] = socket.adapter.rooms[waitingRoom[i]]
+    socket.on('req', () => {
+      for (let i = 0; i < dutyRoom.length; i++) {
+        dutyRoom[i].number = socket.adapter.rooms[dutyRoom[i].id]
       }
-      for (let i = 0; i < roomNumber.length; i++) {
-        if (typeof(roomNumber[i]) == "undefined")  roomNumber[i] = 0
+      for (let i = 0; i < dutyRoom.length; i++) {
+        if (typeof dutyRoom[i].number === 'undefined') dutyRoom[i].number = 0
       }
-
-      waitingRoom.map(e => console.log(e))
-      roomNumber.map(e => console.log(e))
-
-      socket.emit('sendRoomNumber', roomNumber)
+      socket.emit('res', dutyRoom)
+    })
+    // ルームを作成
+    socket.on('makeDutyId', () => {
+      console.log('click')
+      dutyRoom.push({
+        id: roomingId(),
+        number: null,
+        idKey: roomingId()
+      })
     })
 
-
-    socket.emit('getWaitingRoom', waitingRoom)
-    socket.on('createWaitingId', () => {
-      waitingRoom.push(roomingId())
-      socket.emit('getWaitingId', waitingRoom)
+    socket.emit('resDutyRoom', dutyRoom)
+    socket.on('test', () => {
+      socket.emit('test1', dutyRoom)
     })
   })
 }

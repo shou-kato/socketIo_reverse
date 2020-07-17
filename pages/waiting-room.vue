@@ -8,28 +8,22 @@
           </v-card>
           <v-card class="mx-auto" max-width="400">
             <v-card-text>
-              <v-btn @click="getRoomId">部屋を作る</v-btn>
+              <v-btn @click="fetchRoomId">部屋を作る</v-btn>
             </v-card-text>
           </v-card>
           <v-row>
-            <v-col v-for="(item, index) in waitingRoom" :key="index">
+            <v-col v-for="(item, index) in dutyRoom" :key="item.idKey">
               <v-card width="400" height="100">
                 <v-card-text>
-                  <p @click="selectRoom(item)">{{ index + 1 }}ルーム</p>
+                  <p @click="selectRoom(index)">{{ index + 1 }}ルーム</p>
+                  <p v-if="item.number === undefined || item.number === null">
+                    0人
+                  </p>
+                  <p v-else>{{ item.number }}人</p>
                 </v-card-text>
               </v-card>
             </v-col>
           </v-row>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col v-for="(items, j) in roomNumber" :key="j">
-          <v-card width="140" height="80">
-            <v-card-text
-              ><p>ルーム{{ j + 1 }}の人数</p>
-              <p>{{ items }}</p>
-            </v-card-text>
-          </v-card>
         </v-col>
       </v-row>
     </v-container>
@@ -41,32 +35,33 @@ export default {
   data() {
     return {
       socket: io(),
-      waitingRoom: [],
-      roomNumber: []
+      dutyRoom: []
     }
   },
+  created() {},
   mounted() {
     this.socket.on('connected', () => {})
-    this.socket.on('getWaitingRoom', (waitingRoom) => {
-      this.waitingRoom = waitingRoom
-    })
-    this.socket.emit('reqRoomNumber')
-    this.socket.on('sendRoomNumber', (sNumber) => {
-      this.roomNumber = sNumber.map((s) => s.length)
+    this.resDutyRoom()
+    this.socket.emit('req')
+    this.socket.on('res', (f) => {
+      this.dutyRoom = f
+      for (let i = 0; i < this.dutyRoom.length; i++) {
+        this.dutyRoom[i].number = f[i].number.length
+      }
     })
   },
   methods: {
-    getRoomId() {
-      this.socket.emit('createWaitingId')
-      this.socket.on('getWaitingId', (id) => {
-        this.waitingRoom = id
-      })
+    fetchRoomId() {
+      this.socket.emit('makeDutyId')
+      this.socket.emit('test')
+      this.socket.on('test1', (a) => (this.dutyRoom = a))
     },
-    selectRoom(item) {
-      const index = this.waitingRoom.indexOf(item)
-      alert(typeof index)
-      // this.socket.emit('selectJoinRoom', this.waitingRoom[index])
-      this.$store.commit('allocation', this.waitingRoom[index])
+    resDutyRoom() {
+      this.socket.on('resDutyRoom', (resData) => (this.dutyRoom = resData))
+    },
+    selectRoom(i) {
+      console.log(i)
+      this.$store.commit('allocation', this.dutyRoom[i].id)
       this.$router.push('./room')
     }
   }
