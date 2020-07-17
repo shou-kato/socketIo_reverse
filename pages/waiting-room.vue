@@ -45,16 +45,22 @@ export default {
     this.socket.emit('req')
     this.socket.on('res', (f) => {
       this.dutyRoom = f
-      for (let i = 0; i < this.dutyRoom.length; i++) {
-        this.dutyRoom[i].number = f[i].number.length
-      }
+      this.roomNumberChange(f)
     })
   },
   methods: {
     fetchRoomId() {
       this.socket.emit('makeDutyId')
       this.socket.emit('test')
-      this.socket.on('test1', (a) => (this.dutyRoom = a))
+      this.socket.on('test1', (a) => {
+        this.dutyRoom = a
+        this.roomNumberChange(a)
+      })
+    },
+    roomNumberChange(f) {
+      for (let i = 0; i < this.dutyRoom.length; i++) {
+        this.dutyRoom[i].number = f[i].number.length
+      }
     },
     resDutyRoom() {
       this.socket.on('resDutyRoom', (resData) => (this.dutyRoom = resData))
