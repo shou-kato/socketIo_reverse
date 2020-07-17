@@ -66,7 +66,6 @@ export default {
       this.socket.on('resDutyRoom', (resData) => (this.dutyRoom = resData))
     },
     selectRoom(i) {
-      console.log(i)
       this.$store.commit('allocation', this.dutyRoom[i].id)
       this.$router.push('./room')
     }

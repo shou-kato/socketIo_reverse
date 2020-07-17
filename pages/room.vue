@@ -149,18 +149,21 @@ export default {
      * @param {Number} c  色
      */
     invertStone(y, x, dy, dx, c) {
+      // 石を同じ石で挟んでいるなら終了
       if (this.reverseBord[y + dy][x + dx] === c) {
         this.reverseBord[y][x] = c
         return 1
-      }
-      if (this.reverseBord[y + dy][x + dx] === -c) {
+      } else if (this.reverseBord[y + dy][x + dx] === -c) {
         const n = this.invertStone(y + dy, x + dx, dy, dx, c)
-        if (n === 0) {
+        // 石がないのなら終了
+        if (n === 0 || n === 3) {
           return 0
         }
         this.reverseBord[y][x] = c
         this.count += 1
         return n + 1
+      } else {
+        return 0
       }
     },
     gameStart() {
