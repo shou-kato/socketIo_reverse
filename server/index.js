@@ -76,7 +76,6 @@ async function start() {
     })
     // ルームを作成
     socket.on('makeDutyId', () => {
-      console.log('click')
       dutyRoom.push({
         id: roomingId(),
         number: null,
@@ -87,6 +86,22 @@ async function start() {
     socket.emit('resDutyRoom', dutyRoom)
     socket.on('test', () => {
       socket.emit('test1', dutyRoom)
+    })
+
+    // ゲーム開始通知
+    socket.on('readyGo', (roomId) => {
+      const a = Math.floor(Math.random() * Math.floor(10))
+      if (a % 2 !== 0) {
+        const ob = []
+        console.log('奇数')
+        ob.push('先行', '後攻')
+        io.to(roomId).emit('send', ob)
+      } else {
+        const ob = []
+        console.log('偶数')
+        ob.push('後攻', '先行')
+        io.to(roomId).emit('send', ob)
+      }
     })
   })
 }

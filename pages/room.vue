@@ -3,11 +3,14 @@
     <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
         <v-col class="text-center">
-          <v-btn class="mx-auto" text @click="gameStart"
-            >ゲームを開始する</v-btn
+          <v-btn class="mx-auto" text @click="ready"
+            >ここのボタンを押して準備完了にしてください</v-btn
           >
-          <v-card outlined class="mx-auto" max-width="200" max-height="200">
+          <v-card class="mx-auto mb-6" max-width="200" height="100">
             <v-card-text>
+              <p v-if="readyCheck === false">準備中</p>
+              <p v-else>準備完了</p>
+              <p>{{ move_order }}</p>
               <p v-if="turn === 1">あなたの石はblackです</p>
               <p v-else>あなたの石はwhiteです</p>
             </v-card-text>
@@ -40,9 +43,12 @@ export default {
       turn: 1,
       socket: io(),
       count: 0,
-      gameFlag: false
+      gameFlag: false,
+      readyCheck: false,
+      move_order: null
     }
   },
+  computed: {},
   mounted() {
     this.init()
     this.mainProcess()
@@ -53,6 +59,9 @@ export default {
       this.reverseBord = reverseBord
       this.gameFlag = true
       this.pushStone()
+    })
+    this.socket.on('send', (i) => {
+      this.move_order = i[this.$store.state.fa]
     })
   },
   methods: {
@@ -169,25 +178,8 @@ export default {
     gameStart() {
       this.gameFlag = true
     },
-    roomingId() {
-      // ルームIDの生成
-      const length = 6
-      const charset =
-        'abcdefghijklmnopqrstuvwxyz' +
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
-        '0123456789'
-      const passwordGenerator = () => {
-        let password = ''
-        for (let i = 0; i < length; i++) {
-          password += charset[Math.floor(Math.random() * charset.length)]
-        }
-        const includeAllTypes =
-          /[a-z]/.test(password) &&
-          /[A-Z]/.test(password) &&
-          /[0-9]/.test(password)
-        return includeAllTypes ? password : passwordGenerator()
-      }
-      return passwordGenerator()
+    ready() {
+      this.socket.emit('readyGo', this.$store.state.roomId)
     }
   }
 }
