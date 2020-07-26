@@ -16,10 +16,7 @@
               <v-card width="400" height="100">
                 <v-card-text>
                   <p @click="selectRoom(index)">{{ index + 1 }}ルーム</p>
-                  <p v-if="item.number === undefined || item.number === null">
-                    0人
-                  </p>
-                  <p v-else>{{ item.number }}人</p>
+                  <p>{{ item.number }}人</p>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -46,6 +43,14 @@ export default {
     this.socket.on('res', (f) => {
       this.dutyRoom = f
       this.roomNumberChange(f)
+      for (let i = 0; i < this.dutyRoom.length; i++) {
+        if (
+          this.dutyRoom[i].number === undefined ||
+          this.dutyRoom[i].number === null
+        ) {
+          this.dutyRoom[i].number = 0
+        }
+      }
     })
   },
   methods: {
@@ -67,6 +72,8 @@ export default {
     },
     selectRoom(i) {
       this.$store.commit('allocation', this.dutyRoom[i].id)
+      alert(this.dutyRoom[i].number)
+      this.$store.commit('test', this.dutyRoom[i].number)
       this.$router.push('./room')
     }
   }

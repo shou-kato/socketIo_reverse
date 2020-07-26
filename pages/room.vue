@@ -55,13 +55,17 @@ export default {
     this.socket.on('connected', () => {
       this.socket.emit('joinRoom', this.$store.state.roomId)
     })
-    this.socket.on('getBord', (reverseBord) => {
+    this.socket.on('getBord', (reverseBord, flag) => {
       this.reverseBord = reverseBord
-      this.gameFlag = true
+      this.gameFlag = flag
       this.pushStone()
     })
     this.socket.on('send', (i) => {
       this.move_order = i[this.$store.state.fa]
+      if (this.move_order === '先行') {
+        this.gameFlag = true
+        console.log(this.gameFlag)
+      }
     })
   },
   methods: {
@@ -115,7 +119,6 @@ export default {
         const rect = e.target.getBoundingClientRect()
         const xCoordinate = Math.floor((e.clientX - rect.left) / 50)
         const yCoordinate = Math.floor((e.clientY - rect.top) / 50)
-
         // ゲームフラッグがfalseならreturn
         if (!this.gameFlag) {
           return
@@ -128,6 +131,12 @@ export default {
           return
         }
         this.reverseBord[yCoordinate][xCoordinate] = this.turn
+        if (this.move_order === '先行') {
+          this.turn = 1
+        }
+        if (this.move_order === '後攻') {
+          this.turn = -1
+        }
         this.invertStone(yCoordinate, xCoordinate, 0, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 0, -1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 1, 0, this.turn)
@@ -145,8 +154,8 @@ export default {
           this.count = 0
         }
         this.pushStone()
-        this.turn *= -1
-        this.socket.emit('sendBord', this.reverseBord)
+        // this.turn *= -1
+        this.socket.emit('sendBord', this.reverseBord, this.gameFlag)
         this.gameFlag = false
       })
     },

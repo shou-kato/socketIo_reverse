@@ -60,8 +60,9 @@ async function start() {
     socket.emit('connected')
     socket.on('joinRoom', (roomId) => {
       socket.join(roomId)
-      socket.on('sendBord', (reverseBord) => {
-        socket.broadcast.to(roomId).emit('getBord', reverseBord)
+      socket.on('sendBord', (reverseBord, flag) => {
+        flag = true
+        socket.broadcast.to(roomId).emit('getBord', reverseBord, flag)
       })
     })
 
