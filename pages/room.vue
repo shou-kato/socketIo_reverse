@@ -3,17 +3,20 @@
     <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
         <v-col class="text-center">
-          <v-btn class="mx-auto" text @click="ready"
+          <v-btn class="mx-auto" text @click="go"
             >ここのボタンを押して準備完了にしてください</v-btn
           >
-          <v-card class="mx-auto mb-6" max-width="200" height="100">
+          <v-card class="mx-auto mb-6" max-width="200">
             <v-card-text>
-              <p v-if="readyCheck === false">準備中</p>
+              <p v-if="ready === false">準備中</p>
               <p v-else>準備完了</p>
               <p>{{ move_order }}</p>
               <p v-if="turn === 1">あなたの石はblackです</p>
               <p v-else>あなたの石はwhiteです</p>
             </v-card-text>
+          </v-card>
+          <v-card v-if="gameFlag" class="mx-auto mb-2" width="150" height="50">
+            <v-card-text>あなたの番です</v-card-text>
           </v-card>
           <v-card flat>
             <canvas id="canvas" width="500" height="500"></canvas>
@@ -44,7 +47,7 @@ export default {
       socket: io(),
       count: 0,
       gameFlag: false,
-      readyCheck: false,
+      ready: false,
       move_order: null
     }
   },
@@ -64,8 +67,10 @@ export default {
       this.move_order = i[this.$store.state.fa]
       if (this.move_order === '先行') {
         this.gameFlag = true
-        console.log(this.gameFlag)
       }
+    })
+    this.socket.on('flagCheck', () => {
+      this.socket.emit('ss', this.ready)
     })
   },
   methods: {
@@ -187,8 +192,9 @@ export default {
     gameStart() {
       this.gameFlag = true
     },
-    ready() {
+    go() {
       this.socket.emit('readyGo', this.$store.state.roomId)
+      this.ready = true
     }
   }
 }

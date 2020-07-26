@@ -91,18 +91,23 @@ async function start() {
 
     // ゲーム開始通知
     socket.on('readyGo', (roomId) => {
-      const a = Math.floor(Math.random() * Math.floor(10))
-      if (a % 2 !== 0) {
-        const ob = []
-        console.log('奇数')
-        ob.push('先行', '後攻')
-        io.to(roomId).emit('send', ob)
-      } else {
-        const ob = []
-        console.log('偶数')
-        ob.push('後攻', '先行')
-        io.to(roomId).emit('send', ob)
-      }
+      // もし相手のflagがfalse return
+      socket.broadcast.to(roomId).emit('flagCheck')
+      socket.on('ss', (redy) => {
+        if (redy === false) return 0
+        const a = Math.floor(Math.random() * Math.floor(10))
+        if (a % 2 !== 0) {
+          const ob = []
+          console.log('奇数')
+          ob.push('先行', '後攻')
+          io.to(roomId).emit('send', ob)
+        } else {
+          const ob = []
+          console.log('偶数')
+          ob.push('後攻', '先行')
+          io.to(roomId).emit('send', ob)
+        }
+      })
     })
   })
 }
