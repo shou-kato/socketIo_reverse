@@ -13,9 +13,14 @@
           </v-card>
           <v-row>
             <v-col v-for="(item, index) in dutyRoom" :key="item.idKey">
-              <v-card width="400" height="100">
+              <v-card
+                @click="selectRoom(index)"
+                class="mx-auto"
+                width="300"
+                height="100"
+              >
                 <v-card-text>
-                  <p @click="selectRoom(index)">{{ index + 1 }}ルーム</p>
+                  <p>{{ index + 1 }}ルーム</p>
                   <p>{{ item.number }}人</p>
                 </v-card-text>
               </v-card>
@@ -45,7 +50,6 @@ export default {
   methods: {
     fetchRoomId() {
       this.socket.emit('makeDutyId')
-      this.socket.emit('test')
       this.reqRoom()
     },
     reqRoom() {
@@ -73,8 +77,8 @@ export default {
     },
     selectRoom(i) {
       this.$store.commit('allocation', this.dutyRoom[i].id)
-      alert(this.dutyRoom[i].number)
       this.$store.commit('test', this.dutyRoom[i].number)
+      this.socket.emit('bordCreate', this.dutyRoom[i].id)
       this.$router.push('./room')
     }
   }

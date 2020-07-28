@@ -36,8 +36,8 @@ export default {
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-        [3, 0, 0, 0, 1, -1, 0, 0, 0, 3],
         [3, 0, 0, 0, -1, 1, 0, 0, 0, 3],
+        [3, 0, 0, 0, 1, -1, 0, 0, 0, 3],
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
@@ -51,7 +51,6 @@ export default {
       move_order: null
     }
   },
-  computed: {},
   mounted() {
     this.init()
     this.mainProcess()
@@ -72,6 +71,14 @@ export default {
     this.socket.on('flagCheck', () => {
       this.socket.emit('ss', this.ready)
     })
+
+    // 明日に書き換えるcomputedで監視するんが良いかも
+    setTimeout(() => {
+      this.socket.emit('hoge', this.$store.state.roomId)
+      this.socket.on('hogehoge', (bord) => {
+        console.log(bord)
+      })
+    }, 4000)
   },
   methods: {
     init() {
@@ -128,20 +135,16 @@ export default {
         if (!this.gameFlag) {
           return
         }
-        // すでに同じ色では無くて、置いた値が 1 or -1なら早期リターン
+        // 石の重ね置き防止。
         if (
           this.reverseBord[yCoordinate][xCoordinate] === 1 ||
           this.reverseBord[yCoordinate][xCoordinate] === -1
         ) {
           return
         }
-        this.reverseBord[yCoordinate][xCoordinate] = this.turn
-        if (this.move_order === '先行') {
-          this.turn = 1
-        }
-        if (this.move_order === '後攻') {
-          this.turn = -1
-        }
+        if (this.move_order === '先行') this.turn = 1
+        if (this.move_order === '後攻') this.turn = -1
+
         this.invertStone(yCoordinate, xCoordinate, 0, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 0, -1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 1, 0, this.turn)
@@ -152,14 +155,12 @@ export default {
         this.invertStone(yCoordinate, xCoordinate, 1, -1, this.turn)
         if (this.count === 0) {
           this.reverseBord[yCoordinate][xCoordinate] = 0
-          this.count = 0
           return 0
           // 石をひっくり返せた場合
         } else {
           this.count = 0
         }
         this.pushStone()
-        // this.turn *= -1
         this.socket.emit('sendBord', this.reverseBord, this.gameFlag)
         this.gameFlag = false
       })
@@ -172,13 +173,13 @@ export default {
      * @param {Number} c  色
      */
     invertStone(y, x, dy, dx, c) {
-      // 石を同じ石で挟んでいるなら終了
+      // 石を同じ石で挟んでいる場合は終了
       if (this.reverseBord[y + dy][x + dx] === c) {
         this.reverseBord[y][x] = c
         return 1
       } else if (this.reverseBord[y + dy][x + dx] === -c) {
         const n = this.invertStone(y + dy, x + dx, dy, dx, c)
-        // 石がないのなら終了
+        // 石がない場合は終了
         if (n === 0 || n === 3) {
           return 0
         }

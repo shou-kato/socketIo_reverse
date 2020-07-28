@@ -50,7 +50,28 @@ async function start() {
     }
     return passwordGenerator()
   }
+
   const dutyRoom = []
+
+  let user = {
+    reverseBord: [
+      [3, 3, 3, 3, 3, 3, 3, 3],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+      [3, 0, 0, 0, 1, -1, 0, 0, 0, 3],
+      [3, 0, 0, 0, -1, 1, 0, 0, 0, 3],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+      [3, 3, 3, 3, 3, 3, 3, 3]
+    ],
+    gameFlag: false,
+    ready: false,
+    moveOrder: null
+  }
+
+  let userRoom = {}
 
   // ソケットの作成
   const io = socket(server)
@@ -85,10 +106,6 @@ async function start() {
     })
 
     socket.emit('resDutyRoom', dutyRoom)
-    socket.on('test', () => {
-      socket.emit('test1', dutyRoom)
-    })
-
     // ゲーム開始通知
     socket.on('readyGo', (roomId) => {
       // もし相手のflagがfalse return
@@ -109,6 +126,16 @@ async function start() {
         }
       })
     })
+
+    socket.on('bordCreate', (roomId) => {
+      userRoom[roomId] = user
+    })
+
+    socket.on('hoge', (id) => {
+      console.log(id)
+      socket.emit('hogehoge', userRoom[id])
+    })
+
   })
 }
 start()

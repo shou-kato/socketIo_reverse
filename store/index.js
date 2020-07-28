@@ -1,6 +1,6 @@
 export const state = () => ({
   roomId: '',
-  fa: '0'
+  fa: ''
 })
 
 export const mutations = {
