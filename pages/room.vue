@@ -11,8 +11,8 @@
               <p v-if="ready === false">準備中</p>
               <p v-else>準備完了</p>
               <p>{{ move_order }}</p>
-              <p v-if="turn === 1">あなたの石はblackです</p>
-              <p v-else>あなたの石はwhiteです</p>
+              <p v-if="move_order === '先行'">あなたの石はblackです</p>
+              <p v-if="move_order === '後攻'">あなたの石はwhiteです</p>
             </v-card-text>
           </v-card>
           <v-card v-if="gameFlag" class="mx-auto mb-2" width="150" height="50">

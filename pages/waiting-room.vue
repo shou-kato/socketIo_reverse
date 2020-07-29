@@ -14,10 +14,10 @@
           <v-row>
             <v-col v-for="(item, index) in dutyRoom" :key="item.idKey">
               <v-card
-                @click="selectRoom(index)"
                 class="mx-auto"
                 width="300"
                 height="100"
+                @click="selectRoom(index)"
               >
                 <v-card-text>
                   <p>{{ index + 1 }}ルーム</p>
