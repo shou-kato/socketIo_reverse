@@ -102,25 +102,17 @@ export default {
     pushStone() {
       const canvas = document.getElementById('canvas')
       const ctx = canvas.getContext('2d')
+      const fillStone = (y, x) => {
+        if (this.reverseBord[y][x] === 0) return 'rgba(0,0,0,0)'
+        if (this.reverseBord[y][x] === -1) return 'white'
+        if (this.reverseBord[y][x] === 1) return 'black'
+        if (this.reverseBord[y][x] === 3) return 'rgba(0,0,0,0)'
+      }
       for (let y = 0; y < 10; y++) {
         for (let x = 0; x < 10; x++) {
           ctx.beginPath()
           ctx.arc(50 * x + 25, 50 * y + 25, 20, 0, 2 * Math.PI, false)
-
-          switch (this.reverseBord[y][x]) {
-            case -1:
-              ctx.fillStyle = 'white'
-              break
-            case 0:
-              ctx.fillStyle = 'rgba(0,0,0,0)'
-              break
-            case 1:
-              ctx.fillStyle = 'black'
-              break
-            case 3:
-              ctx.fillStyle = 'rgba(0,0,0,0)'
-              break
-          }
+          ctx.fillStyle = fillStone(y, x)
           ctx.fill()
         }
       }
@@ -141,12 +133,10 @@ export default {
           return
         }
         // 石の重ね置き防止。
-        if (
-          this.reverseBord[yCoordinate][xCoordinate] === 1 ||
-          this.reverseBord[yCoordinate][xCoordinate] === -1
-        ) {
-          return
-        }
+        if (this.reverseBord[yCoordinate][xCoordinate] === 1) return
+        if (this.reverseBord[yCoordinate][xCoordinate] === -1) return
+
+        // 先行後攻判断
         if (this.moveOrder === '先行') this.turn = 1
         if (this.moveOrder === '後攻') this.turn = -1
 
@@ -160,7 +150,7 @@ export default {
         this.invertStone(yCoordinate, xCoordinate, 1, -1, this.turn)
         if (this.count === 0) {
           this.reverseBord[yCoordinate][xCoordinate] = 0
-          return 0
+          return
           // 石をひっくり返せた場合
         } else {
           this.count = 0
