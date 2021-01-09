@@ -24,10 +24,6 @@ module.exports = {
    ** Global CSS
    */
   css: [],
-  server: {
-    host: '0.0.0.0',
-    port: 3000
-  },
   /*
    ** Plugins to load before mounting the App
    */
@@ -43,15 +39,7 @@ module.exports = {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
-    '@nuxtjs/vuetify',
-
-    // With options
-    [
-      '@nuxtjs/vuetify',
-      {
-        /* module options */
-      }
-    ]
+    '@nuxtjs/vuetify'
   ],
   /*
    ** Nuxt.js modules
