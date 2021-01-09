@@ -53,7 +53,7 @@ async function start() {
 
   const dutyRoom = []
 
-  let user = {
+  const user = {
     reverseBord: [
       [3, 3, 3, 3, 3, 3, 3, 3],
       [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
@@ -71,7 +71,7 @@ async function start() {
     moveOrder: null
   }
 
-  let userRoom = {}
+  const userRoom = {}
 
   // ソケットの作成
   const io = socket(server)
@@ -115,12 +115,10 @@ async function start() {
         const a = Math.floor(Math.random() * Math.floor(10))
         if (a % 2 !== 0) {
           const ob = []
-          console.log('奇数')
           ob.push('先行', '後攻')
           io.to(roomId).emit('send', ob)
         } else {
           const ob = []
-          console.log('偶数')
           ob.push('後攻', '先行')
           io.to(roomId).emit('send', ob)
         }
@@ -132,10 +130,9 @@ async function start() {
     })
 
     socket.on('hoge', (id) => {
-      console.log(id)
       socket.emit('hogehoge', userRoom[id])
     })
-
   })
 }
+
 start()

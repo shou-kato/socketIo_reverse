@@ -3,18 +3,14 @@
     <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
         <v-col class="text-center">
-          <v-btn class="mx-auto" text @click="go"
-            >ここのボタンを押して準備完了にしてください</v-btn
-          >
-          <v-card class="mx-auto mb-6" max-width="200">
-            <v-card-text>
-              <p v-if="ready === false">準備中</p>
-              <p v-else>準備完了</p>
-              <p>{{ move_order }}</p>
-              <p v-if="move_order === '先行'">あなたの石はblackです</p>
-              <p v-if="move_order === '後攻'">あなたの石はwhiteです</p>
-            </v-card-text>
-          </v-card>
+          <v-btn class="mx-auto" text @click="gameStart"
+            >ここのボタンを押して準備完了にしてください
+          </v-btn>
+          <p v-if="ready === false">準備中</p>
+          <p v-else>準備完了</p>
+          <p>{{ moveOrder }}</p>
+          <p v-if="moveOrder === '先行'">あなたの石はblackです</p>
+          <p v-if="moveOrder === '後攻'">あなたの石はwhiteです</p>
           <v-card v-if="gameFlag" class="mx-auto mb-2" width="150" height="50">
             <v-card-text>あなたの番です</v-card-text>
           </v-card>
@@ -28,6 +24,7 @@
 </template>
 <script>
 import io from 'socket.io-client'
+
 export default {
   data() {
     return {
@@ -48,7 +45,7 @@ export default {
       count: 0,
       gameFlag: false,
       ready: false,
-      move_order: null
+      moveOrder: null
     }
   },
   mounted() {
@@ -63,8 +60,8 @@ export default {
       this.pushStone()
     })
     this.socket.on('send', (i) => {
-      this.move_order = i[this.$store.state.fa]
-      if (this.move_order === '先行') {
+      this.moveOrder = i[this.$store.state.fa]
+      if (this.moveOrder === '先行') {
         this.gameFlag = true
       }
     })
@@ -82,10 +79,10 @@ export default {
   },
   methods: {
     init() {
-      this.rect()
+      this.generateStage()
       this.pushStone()
     },
-    rect() {
+    generateStage() {
       const canvas = document.getElementById('canvas')
       const ctx = canvas.getContext('2d')
       for (let i = 0; i < 8; i++) {
@@ -142,8 +139,8 @@ export default {
         ) {
           return
         }
-        if (this.move_order === '先行') this.turn = 1
-        if (this.move_order === '後攻') this.turn = -1
+        if (this.moveOrder === '先行') this.turn = 1
+        if (this.moveOrder === '後攻') this.turn = -1
 
         this.invertStone(yCoordinate, xCoordinate, 0, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 0, -1, this.turn)
@@ -191,9 +188,6 @@ export default {
       }
     },
     gameStart() {
-      this.gameFlag = true
-    },
-    go() {
       this.socket.emit('readyGo', this.$store.state.roomId)
       this.ready = true
     }
