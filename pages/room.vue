@@ -14,9 +14,17 @@
           <v-card v-if="gameFlag" class="mx-auto mb-2" width="150" height="50">
             <v-card-text>あなたの番です</v-card-text>
           </v-card>
-          <v-card flat>
-            <canvas id="canvas" width="500" height="500"></canvas>
-          </v-card>
+          <div
+            style="margin: auto;width: 400px;height: 400px;background: green;"
+          >
+            <canvas
+              id="canvas"
+              style="margin-left: -50px;
+              margin-top: -50px;"
+              width="500"
+              height="500"
+            ></canvas>
+          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -101,16 +109,16 @@ export default {
 
           switch (this.reverseBord[y][x]) {
             case -1:
-              ctx.fillStyle = 'blue'
+              ctx.fillStyle = 'white'
               break
             case 0:
-              ctx.fillStyle = 'white'
+              ctx.fillStyle = 'rgba(0,0,0,0)'
               break
             case 1:
               ctx.fillStyle = 'black'
               break
             case 3:
-              ctx.fillStyle = 'white'
+              ctx.fillStyle = 'rgba(0,0,0,0)'
               break
           }
           ctx.fill()

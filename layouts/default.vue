@@ -7,7 +7,7 @@
       <nuxt />
       <v-footer color="indigo" app>
         <span class="white--text mx-auto"
-          >&copy; {{ new Date().getFullYear() }} higeqq</span
+          >&copy; {{ new Date().getFullYear() }} sho kato</span
         >
       </v-footer>
     </v-app>
