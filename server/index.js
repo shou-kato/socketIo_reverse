@@ -107,7 +107,7 @@ async function start() {
 
     socket.emit('resDutyRoom', dutyRoom)
     // ゲーム開始通知
-    socket.on('readyGo', (roomId) => {
+    socket.on('gameStart', (roomId) => {
       // もし相手のflagがfalse return
       socket.broadcast.to(roomId).emit('flagCheck')
       socket.on('ss', (redy) => {

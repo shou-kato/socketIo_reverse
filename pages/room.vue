@@ -190,7 +190,7 @@ export default {
       }
     },
     gameStart() {
-      this.socket.emit('readyGo', this.$store.state.roomId)
+      this.socket.emit('gameStart', this.$store.state.roomId)
       this.ready = true
     }
   }
