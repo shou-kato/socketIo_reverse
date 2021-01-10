@@ -3,27 +3,31 @@
     <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
         <v-col class="text-center">
-          <v-btn class="mx-auto" text @click="gameStart"
+          <v-btn @click="gameStart"
             >ここのボタンを押して準備完了にしてください
           </v-btn>
-          <p v-if="ready === false">準備中</p>
-          <p v-else>準備完了</p>
-          <p>{{ moveOrder }}</p>
-          <p v-if="moveOrder === '先行'">あなたの石はblackです</p>
-          <p v-if="moveOrder === '後攻'">あなたの石はwhiteです</p>
-          <v-card v-if="gameFlag" class="mx-auto mb-2" width="150" height="50">
-            <v-card-text>あなたの番です</v-card-text>
-          </v-card>
-          <div
-            style="margin: auto;width: 400px;height: 400px;background: green;"
-          >
-            <canvas
-              id="canvas"
-              style="margin-left: -50px;
+          <div>
+            <v-row>
+              <v-col class="text-right">
+                <p v-if="ready === false">準備中</p>
+                <p v-else>準備完了</p>
+                <p>{{ moveOrder }}</p>
+                <p v-if="moveOrder === '先行'">あなたの石はblackです</p>
+                <p v-if="moveOrder === '後攻'">あなたの石はwhiteです</p>
+                <p v-if="gameFlag">あなたの番です</p>
+              </v-col>
+            </v-row>
+            <div
+              style="margin: auto;width: 400px;height: 400px;background: green;"
+            >
+              <canvas
+                id="canvas"
+                style="margin-left: -50px;
               margin-top: -50px;"
-              width="500"
-              height="500"
-            ></canvas>
+                width="500"
+                height="500"
+              ></canvas>
+            </div>
           </div>
         </v-col>
       </v-row>
