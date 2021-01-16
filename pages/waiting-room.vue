@@ -44,7 +44,7 @@ export default {
   mounted() {
     this.socket.on('connected', () => {})
     this.resDutyRoom()
-    this.socket.emit('req')
+    this.socket.emit('bordRequest')
     this.reqRoom()
   },
   methods: {
@@ -53,7 +53,7 @@ export default {
       this.reqRoom()
     },
     reqRoom() {
-      this.socket.emit('req')
+      this.socket.emit('bordRequest')
       this.socket.on('res', (f) => {
         this.dutyRoom = f
         this.roomNumberChange(f)

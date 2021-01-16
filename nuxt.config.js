@@ -44,6 +44,7 @@ module.exports = {
     '@nuxtjs/eslint-module',
     '@nuxtjs/vuetify'
   ],
+
   /*
    ** Nuxt.js modules
    */

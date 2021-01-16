@@ -76,9 +76,11 @@ async function start() {
   // ソケットの作成
   const io = socket(server)
   // 接続された時の処理
-  io.sockets.on('connection', (socket) => {
-    // 接続完了を通知
-    socket.emit('connected')
+  const socketStart = () => {
+    socketConect()
+  }
+
+  const joinRoom = (socket) => {
     socket.on('joinRoom', (roomId) => {
       socket.join(roomId)
       socket.on('sendBord', (reverseBord, flag) => {
@@ -86,8 +88,20 @@ async function start() {
         socket.broadcast.to(roomId).emit('getBord', reverseBord, flag)
       })
     })
+  }
 
-    socket.on('req', () => {
+  const makeRoom = (socket) => {
+    socket.on('makeDutyId', () => {
+      dutyRoom.push({
+        id: roomingId(),
+        number: null,
+        idKey: roomingId()
+      })
+    })
+  }
+
+  const requestBord = (socket) => {
+    socket.on('bordRequest', () => {
       for (let i = 0; i < dutyRoom.length; i++) {
         dutyRoom[i].number = socket.adapter.rooms[dutyRoom[i].id]
       }
@@ -96,43 +110,60 @@ async function start() {
       }
       socket.emit('res', dutyRoom)
     })
-    // ルームを作成
-    socket.on('makeDutyId', () => {
-      dutyRoom.push({
-        id: roomingId(),
-        number: null,
-        idKey: roomingId()
-      })
-    })
+  }
 
-    socket.emit('resDutyRoom', dutyRoom)
+  const h = (isSenkou, roomId) => {
+    const ob = []
+    if (isSenkou === false) return
+    const a = Math.floor(Math.random() * Math.floor(10))
+    if (a % 2 !== 0) {
+      ob.push('先行', '後攻')
+      io.to(roomId).emit('send', ob)
+    } else {
+      ob.push('後攻', '先行')
+      io.to(roomId).emit('send', ob)
+    }
+  }
+
+  const gameStart = (socket) => {
     // ゲーム開始通知
     socket.on('gameStart', (roomId) => {
       // もし相手のflagがfalse return
       socket.broadcast.to(roomId).emit('flagCheck')
       socket.on('ss', (redy) => {
-        if (redy === false) return 0
-        const a = Math.floor(Math.random() * Math.floor(10))
-        if (a % 2 !== 0) {
-          const ob = []
-          ob.push('先行', '後攻')
-          io.to(roomId).emit('send', ob)
-        } else {
-          const ob = []
-          ob.push('後攻', '先行')
-          io.to(roomId).emit('send', ob)
-        }
+        h(redy, roomId)
       })
     })
+  }
 
+  const createBord = (socket) => {
     socket.on('bordCreate', (roomId) => {
       userRoom[roomId] = user
     })
+  }
+  const socketConect = () => {
+    io.sockets.on('connection', (socket) => {
+      // 接続完了を通知
+      socket.emit('connected')
 
-    socket.on('hoge', (id) => {
-      socket.emit('hogehoge', userRoom[id])
+      // ルームに参加する
+      joinRoom(socket)
+
+      // ルームを作成
+      makeRoom(socket)
+
+      // ボードをリクエストする
+      requestBord(socket)
+
+      // ゲームスタート
+      gameStart(socket)
+
+      socket.emit('resDutyRoom', dutyRoom)
+
+      createBord(socket)
     })
-  })
+  }
+  socketStart()
 }
 
 start()
