@@ -57,20 +57,11 @@ export default {
       this.socket.on('res', (f) => {
         this.dutyRoom = f
         this.roomNumberChange(f)
-        for (let i = 0; i < this.dutyRoom.length; i++) {
-          if (
-            this.dutyRoom[i].number === undefined ||
-            this.dutyRoom[i].number === null
-          ) {
-            this.dutyRoom[i].number = 0
-          }
-        }
+        this.dutyRoom.forEach((e) => (e.number == null ? (e.number = 0) : ''))
       })
     },
     roomNumberChange(f) {
-      for (let i = 0; i < this.dutyRoom.length; i++) {
-        this.dutyRoom[i].number = f[i].number.length
-      }
+      this.dutyRoom.forEach((e, i) => (e.number = f[i].number.length))
     },
     resDutyRoom() {
       this.socket.on('resDutyRoom', (resData) => (this.dutyRoom = resData))

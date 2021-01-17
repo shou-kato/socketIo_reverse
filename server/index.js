@@ -75,7 +75,26 @@ async function start() {
   const io = socket(server)
   // 接続された時の処理
   const socketStart = () => {
-    socketConect()
+    io.sockets.on('connection', (socket) => {
+      // 接続完了を通知
+      socket.emit('connected')
+
+      // ルームに参加する
+      joinRoom(socket)
+
+      // ルームを作成
+      makeRoom(socket)
+
+      // ボードをリクエストする
+      requestBord(socket)
+
+      // ゲームスタート
+      gameStart(socket)
+
+      socket.emit('resDutyRoom', dutyRoom)
+
+      createBord(socket)
+    })
   }
 
   const joinRoom = (socket) => {
@@ -134,29 +153,6 @@ async function start() {
   const createBord = (socket) => {
     socket.on('createBord', (roomId) => {
       userRoom[roomId] = user
-    })
-  }
-
-  const socketConect = () => {
-    io.sockets.on('connection', (socket) => {
-      // 接続完了を通知
-      socket.emit('connected')
-
-      // ルームに参加する
-      joinRoom(socket)
-
-      // ルームを作成
-      makeRoom(socket)
-
-      // ボードをリクエストする
-      requestBord(socket)
-
-      // ゲームスタート
-      gameStart(socket)
-
-      socket.emit('resDutyRoom', dutyRoom)
-
-      createBord(socket)
     })
   }
   socketStart()
