@@ -9,6 +9,23 @@ const socket = require('socket.io')
 const config = require('../nuxt.config.js')
 config.dev = process.env.NODE_ENV !== 'production'
 
+// ルームIDの生成
+const roomingId = () => {
+  const length = 6
+  const charset =
+    'abcdefghijklmnopqrstuvwxyz' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789'
+  const passwordGenerator = () => {
+    let password = ''
+    for (let i = 0; i < length; i++) {
+      password += charset[Math.floor(Math.random() * charset.length)]
+    }
+    const includeAllTypes =
+      /[a-z]/.test(password) && /[A-Z]/.test(password) && /[0-9]/.test(password)
+    return includeAllTypes ? password : passwordGenerator()
+  }
+  return passwordGenerator()
+}
+
 async function start() {
   // Init Nuxt.js
   const nuxt = new Nuxt(config)
@@ -31,25 +48,6 @@ async function start() {
     message: `Server listening on http://${host}:${port}`,
     badge: true
   })
-
-  // ルームIDの生成
-  const roomingId = () => {
-    const length = 6
-    const charset =
-      'abcdefghijklmnopqrstuvwxyz' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789'
-    const passwordGenerator = () => {
-      let password = ''
-      for (let i = 0; i < length; i++) {
-        password += charset[Math.floor(Math.random() * charset.length)]
-      }
-      const includeAllTypes =
-        /[a-z]/.test(password) &&
-        /[A-Z]/.test(password) &&
-        /[0-9]/.test(password)
-      return includeAllTypes ? password : passwordGenerator()
-    }
-    return passwordGenerator()
-  }
 
   const dutyRoom = []
 
@@ -102,27 +100,24 @@ async function start() {
 
   const requestBord = (socket) => {
     socket.on('bordRequest', () => {
-      for (let i = 0; i < dutyRoom.length; i++) {
-        dutyRoom[i].number = socket.adapter.rooms[dutyRoom[i].id]
-      }
-      for (let i = 0; i < dutyRoom.length; i++) {
-        if (typeof dutyRoom[i].number === 'undefined') dutyRoom[i].number = 0
-      }
+      dutyRoom.forEach(
+        (e, i) => (e.number = socket.adapter.rooms[dutyRoom[i].id])
+      )
+
+      dutyRoom.forEach((e) =>
+        typeof e.number === 'undefined' ? (e.number = 0) : ''
+      )
       socket.emit('res', dutyRoom)
     })
   }
 
-  const h = (isSenkou, roomId) => {
-    const ob = []
-    if (isSenkou === false) return
-    const a = Math.floor(Math.random() * Math.floor(10))
-    if (a % 2 !== 0) {
-      ob.push('先行', '後攻')
-      io.to(roomId).emit('send', ob)
-    } else {
-      ob.push('後攻', '先行')
-      io.to(roomId).emit('send', ob)
-    }
+  const isjudge = (order, roomId) => {
+    if (!order) return
+    const ramdomNumber = Math.floor(Math.random() * Math.floor(10))
+    if (ramdomNumber % 2 !== 0)
+      return io.to(roomId).emit('send', ['先行', '後攻'])
+
+    return io.to(roomId).emit('send', ['後攻', '先行'])
   }
 
   const gameStart = (socket) => {
@@ -130,17 +125,18 @@ async function start() {
     socket.on('gameStart', (roomId) => {
       // もし相手のflagがfalse return
       socket.broadcast.to(roomId).emit('flagCheck')
-      socket.on('ss', (redy) => {
-        h(redy, roomId)
+      socket.on('isReady', (ready) => {
+        isjudge(ready, roomId)
       })
     })
   }
 
   const createBord = (socket) => {
-    socket.on('bordCreate', (roomId) => {
+    socket.on('createBord', (roomId) => {
       userRoom[roomId] = user
     })
   }
+
   const socketConect = () => {
     io.sockets.on('connection', (socket) => {
       // 接続完了を通知

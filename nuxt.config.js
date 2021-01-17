@@ -3,6 +3,7 @@ module.exports = {
   /*
    ** Headers of the page
    */
+  telemetry: false,
   head: {
     title: process.env.npm_package_name || '',
     htmlAttrs: {

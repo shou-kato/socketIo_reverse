@@ -78,16 +78,8 @@ export default {
       }
     })
     this.socket.on('flagCheck', () => {
-      this.socket.emit('ss', this.ready)
+      this.socket.emit('isReady', this.ready)
     })
-
-    // 明日に書き換えるcomputedで監視するんが良いかも
-    setTimeout(() => {
-      this.socket.emit('hoge', this.$store.state.roomId)
-      this.socket.on('hogehoge', (bord) => {
-        console.log(bord)
-      })
-    }, 4000)
   },
   methods: {
     init() {
