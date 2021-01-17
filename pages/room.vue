@@ -115,8 +115,6 @@ export default {
        */
       const canvas = document.getElementById('canvas')
       // 先行後攻判断
-      if (this.moveOrder === '先行') this.turn = 1
-      if (this.moveOrder === '後攻') this.turn = -1
 
       // 座標取得
       canvas.addEventListener('click', (e) => {
@@ -129,6 +127,9 @@ export default {
         // 石の重ね置き防止。
         if (this.reverseBord[yCoordinate][xCoordinate] === 1) return
         if (this.reverseBord[yCoordinate][xCoordinate] === -1) return
+
+        if (this.moveOrder === '先行') this.turn = 1
+        if (this.moveOrder === '後攻') this.turn = -1
 
         this.invertStone(yCoordinate, xCoordinate, 0, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 0, -1, this.turn)
