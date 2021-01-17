@@ -1,9 +1,10 @@
 const express = require('express')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
+const socket = require('socket.io')
+
 const app = express()
 // socket.io の require
-const socket = require('socket.io')
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
@@ -120,11 +121,11 @@ async function start() {
   const requestBord = (socket) => {
     socket.on('bordRequest', () => {
       dutyRoom.forEach(
-        (e, i) => (e.number = socket.adapter.rooms[dutyRoom[i].id])
+        (room, i) => (room.number = socket.adapter.rooms[dutyRoom[i].id])
       )
 
-      dutyRoom.forEach((e) =>
-        typeof e.number === 'undefined' ? (e.number = 0) : ''
+      dutyRoom.forEach((room) =>
+        typeof room.number === 'undefined' ? (room.number = 0) : ''
       )
       socket.emit('res', dutyRoom)
     })
@@ -142,7 +143,6 @@ async function start() {
   const gameStart = (socket) => {
     // ゲーム開始通知
     socket.on('gameStart', (roomId) => {
-      // もし相手のflagがfalse return
       socket.broadcast.to(roomId).emit('flagCheck')
       socket.on('isReady', (ready) => {
         isjudge(ready, roomId)
@@ -155,6 +155,7 @@ async function start() {
       userRoom[roomId] = user
     })
   }
+
   socketStart()
 }
 

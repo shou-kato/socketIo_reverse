@@ -1,5 +1,5 @@
 module.exports = {
-  mode: 'universal',
+  ssr: true,
   /*
    ** Headers of the page
    */

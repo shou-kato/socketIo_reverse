@@ -9,21 +9,20 @@
           <div>
             <v-row>
               <v-col class="text-right">
-                <p v-if="ready === false">準備中</p>
+                <p v-if="!isReady">準備中</p>
                 <p v-else>準備完了</p>
                 <p>{{ moveOrder }}</p>
-                <p v-if="moveOrder === '先行'">あなたの石はblackです</p>
-                <p v-if="moveOrder === '後攻'">あなたの石はwhiteです</p>
+                <p v-if="moveOrder === '先行'">あなたの石は黒です</p>
+                <p v-if="moveOrder === '後攻'">あなたの石は白です</p>
                 <p v-if="gameFlag">あなたの番です</p>
               </v-col>
             </v-row>
             <div
-              style="margin: auto;width: 400px;height: 400px;background: green;"
+              style="margin: auto;width: 400px;height: 400px; background: green;"
             >
               <canvas
                 id="canvas"
-                style="margin-left: -50px;
-              margin-top: -50px;"
+                style="margin-left: -50px; margin-top: -50px;"
                 width="500"
                 height="500"
               ></canvas>
@@ -56,36 +55,32 @@ export default {
       socket: io(),
       count: 0,
       gameFlag: false,
-      ready: false,
+      isReady: false,
       moveOrder: null
     }
   },
   mounted() {
-    this.init()
+    this.generateStage()
+    this.pushStone()
+
     this.mainProcess()
-    this.socket.on('connected', () => {
+    this.socket.on('connected', () =>
       this.socket.emit('joinRoom', this.$store.state.roomId)
-    })
+    )
+
     this.socket.on('getBord', (reverseBord, flag) => {
       this.reverseBord = reverseBord
       this.gameFlag = flag
       this.pushStone()
     })
+
     this.socket.on('send', (i) => {
       this.moveOrder = i[this.$store.state.fa]
-      if (this.moveOrder === '先行') {
-        this.gameFlag = true
-      }
+      if (this.moveOrder === '先行') this.gameFlag = true
     })
-    this.socket.on('flagCheck', () => {
-      this.socket.emit('isReady', this.ready)
-    })
+    this.socket.on('flagCheck', () => this.socket.emit('isReady', this.isReady))
   },
   methods: {
-    init() {
-      this.generateStage()
-      this.pushStone()
-    },
     generateStage() {
       const canvas = document.getElementById('canvas')
       const ctx = canvas.getContext('2d')
@@ -119,22 +114,21 @@ export default {
        *  @param {Number} xCoordinate  見てる y座標
        */
       const canvas = document.getElementById('canvas')
+      // 先行後攻判断
+      if (this.moveOrder === '先行') this.turn = 1
+      if (this.moveOrder === '後攻') this.turn = -1
+
       // 座標取得
       canvas.addEventListener('click', (e) => {
         const rect = e.target.getBoundingClientRect()
         const xCoordinate = Math.floor((e.clientX - rect.left) / 50)
         const yCoordinate = Math.floor((e.clientY - rect.top) / 50)
-        // ゲームフラッグがfalseならreturn
-        if (!this.gameFlag) {
-          return
-        }
+
+        if (!this.gameFlag) return
+
         // 石の重ね置き防止。
         if (this.reverseBord[yCoordinate][xCoordinate] === 1) return
         if (this.reverseBord[yCoordinate][xCoordinate] === -1) return
-
-        // 先行後攻判断
-        if (this.moveOrder === '先行') this.turn = 1
-        if (this.moveOrder === '後攻') this.turn = -1
 
         this.invertStone(yCoordinate, xCoordinate, 0, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 0, -1, this.turn)
@@ -144,13 +138,13 @@ export default {
         this.invertStone(yCoordinate, xCoordinate, 1, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, -1, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 1, -1, this.turn)
-        if (this.count === 0) {
-          this.reverseBord[yCoordinate][xCoordinate] = 0
-          return
-          // 石をひっくり返せた場合
-        } else {
-          this.count = 0
-        }
+
+        if (this.count === 0)
+          return (this.reverseBord[yCoordinate][xCoordinate] = 0)
+
+        // 石をひっくり返せた場合
+        if (this.count !== 0) this.count = 0
+
         this.pushStone()
         this.socket.emit('sendBord', this.reverseBord, this.gameFlag)
         this.gameFlag = false
@@ -182,9 +176,9 @@ export default {
       }
     },
     gameStart() {
-      if (this.ready) return
+      if (this.isReady) return
       this.socket.emit('gameStart', this.$store.state.roomId)
-      this.ready = true
+      this.isReady = true
     }
   }
 }
