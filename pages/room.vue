@@ -182,6 +182,7 @@ export default {
       }
     },
     gameStart() {
+      if (this.ready) return
       this.socket.emit('gameStart', this.$store.state.roomId)
       this.ready = true
     }
