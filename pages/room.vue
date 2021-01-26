@@ -75,7 +75,7 @@ export default {
     })
 
     this.socket.on('send', (i) => {
-      this.moveOrder = i[this.$store.state.fa]
+      this.moveOrder = i[this.$store.state.numberOfPeople]
       if (this.moveOrder === '先行') this.gameFlag = true
     })
     this.socket.on('flagCheck', () => this.socket.emit('isReady', this.isReady))

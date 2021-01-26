@@ -67,7 +67,7 @@ export default {
     },
     selectRoom(i) {
       this.$store.commit('allocation', this.dutyRoom[i].id)
-      this.$store.commit('test', this.dutyRoom[i].number)
+      this.$store.commit('numberManagement', this.dutyRoom[i].number)
       this.socket.emit('createBord', this.dutyRoom[i].id)
       this.$router.push('./room')
     }
