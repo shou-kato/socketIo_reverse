@@ -1,13 +1,13 @@
 export const state = () => ({
   roomId: '',
-  fa: ''
+  numberOfPeople: ''
 })
 
 export const mutations = {
   allocation(state, payload) {
     state.roomId = payload
   },
-  test(state, payload) {
-    state.fa = payload
+  numberManagement(state, payload) {
+    state.numberOfPeople = payload
   }
 }
