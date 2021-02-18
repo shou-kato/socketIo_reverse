@@ -2,13 +2,25 @@
   <v-main>
     <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
-        <v-col class="text-center">
-          <v-btn @click="gameStart"
-            >ここのボタンを押して準備完了にしてください
-          </v-btn>
+        <v-col>
           <div>
             <v-row>
-              <v-col class="text-right">
+              <v-col cols="10">
+                <div
+                  style="margin: auto;width: 400px;height: 400px; background: green;"
+                >
+                  <canvas
+                    id="canvas"
+                    style="margin-left: -50px; margin-top: -50px;"
+                    width="500"
+                    height="500"
+                  ></canvas>
+                </div>
+              </v-col>
+              <v-col cols="2">
+                <v-btn class="mb-7" @click="gameStart"
+                  >ここのボタンを押して準備完了にしてください
+                </v-btn>
                 <p v-if="!isReady">準備中</p>
                 <p v-else>準備完了</p>
                 <p>{{ moveOrder }}</p>
@@ -17,16 +29,6 @@
                 <p v-if="gameFlag">あなたの番です</p>
               </v-col>
             </v-row>
-            <div
-              style="margin: auto;width: 400px;height: 400px; background: green;"
-            >
-              <canvas
-                id="canvas"
-                style="margin-left: -50px; margin-top: -50px;"
-                width="500"
-                height="500"
-              ></canvas>
-            </div>
           </div>
         </v-col>
       </v-row>

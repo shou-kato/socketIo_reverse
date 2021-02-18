@@ -3,6 +3,7 @@
     <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
         <v-col class="text-center">
+          <h3>PC推奨</h3>
           <v-card class="mx-auto" max-width="400">
             <v-card-title>待機ルーム一覧</v-card-title>
           </v-card>
