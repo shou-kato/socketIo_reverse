@@ -61,9 +61,11 @@ export default {
   },
   mounted() {
     this.generateStage()
+
     this.pushStone()
 
     this.mainProcess()
+
     this.socket.on('connected', () =>
       this.socket.emit('joinRoom', this.$store.state.roomId)
     )
@@ -84,6 +86,7 @@ export default {
     generateStage() {
       const canvas = document.getElementById('canvas')
       const ctx = canvas.getContext('2d')
+
       for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
           ctx.strokeRect(50 * i + 50, 50 * j + 50, 50, 50)
@@ -93,12 +96,14 @@ export default {
     pushStone() {
       const canvas = document.getElementById('canvas')
       const ctx = canvas.getContext('2d')
+
       const fillStone = (y, x) => {
         if (this.reverseBord[y][x] === 0) return 'rgba(0,0,0,0)'
         if (this.reverseBord[y][x] === -1) return 'rgb(255, 255, 255)'
         if (this.reverseBord[y][x] === 1) return 'rgb(0,0,0)'
         if (this.reverseBord[y][x] === 3) return 'rgba(0,0,0,0)'
       }
+
       for (let y = 0; y < 10; y++) {
         for (let x = 0; x < 10; x++) {
           ctx.beginPath()
@@ -108,26 +113,39 @@ export default {
         }
       }
     },
+    validate(yCoordinate, xCoordinate) {
+      if (!this.gameFlag) {
+        return
+      }
+      if (this.reverseBord[yCoordinate][xCoordinate] === 1) {
+        return
+      }
+      if (this.reverseBord[yCoordinate][xCoordinate] === -1) {
+        return false
+      }
+    },
     mainProcess() {
       /**
        *  @param {Number} yCoordinate  見てる y座標
        *  @param {Number} xCoordinate  見てる y座標
        */
       const canvas = document.getElementById('canvas')
-      // 座標取得
+
       canvas.addEventListener('click', (e) => {
         const rect = e.target.getBoundingClientRect()
+
         const xCoordinate = Math.floor((e.clientX - rect.left) / 50)
         const yCoordinate = Math.floor((e.clientY - rect.top) / 50)
 
-        if (!this.gameFlag) return
+        this.validate(yCoordinate, xCoordinate)
 
-        // 石の重ね置き防止。
-        if (this.reverseBord[yCoordinate][xCoordinate] === 1) return
-        if (this.reverseBord[yCoordinate][xCoordinate] === -1) return
+        if (this.moveOrder === '先行') {
+          this.turn = 1
+        }
 
-        if (this.moveOrder === '先行') this.turn = 1
-        if (this.moveOrder === '後攻') this.turn = -1
+        if (this.moveOrder === '後攻') {
+          this.turn = -1
+        }
 
         this.invertStone(yCoordinate, xCoordinate, 1, 0, this.turn)
         this.invertStone(yCoordinate, xCoordinate, -1, 0, this.turn)
@@ -137,11 +155,15 @@ export default {
         this.invertStone(yCoordinate, xCoordinate, 1, -1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, -1, 1, this.turn)
 
-        if (this.count === 0)
+        // 一度のひっくり返らな買った場合処理を止める。
+        if (this.count === 0) {
           return (this.reverseBord[yCoordinate][xCoordinate] = 0)
+        }
 
         // 石をひっくり返せた場合
-        if (this.count !== 0) this.count = 0
+        if (this.count !== 0) {
+          this.count = 0
+        }
 
         this.pushStone()
         this.socket.emit('sendBord', this.reverseBord, this.gameFlag)
