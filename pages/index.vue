@@ -31,17 +31,18 @@
               v-for="(item, index) in dutyRoom"
               :key="item.idKey"
             >
-              <v-card
-                class="mx-auto"
-                width="300"
-                height="100"
-                @click="selectRoom(index)"
-              >
-                <v-card-text>
-                  <p>{{ index + 1 }}ルーム</p>
-                  <p>{{ item.number }}人</p>
-                </v-card-text>
-              </v-card>
+              <nuxt-link to="/play" @click.native="selectRoom(index)">
+                <v-card
+                  class="mx-auto"
+                  width="300"
+                  height="100"
+                >
+                  <v-card-text>
+                    <p>{{ index + 1 }}ルーム</p>
+                    <p>{{ item.number }}人</p>
+                  </v-card-text>
+                </v-card>
+              </nuxt-link>
             </v-col>
           </v-row>
         </v-col>
@@ -87,7 +88,6 @@ export default {
       this.$store.commit('allocation', this.dutyRoom[i].id)
       this.$store.commit('numberManagement', this.dutyRoom[i].number)
       this.socket.emit('createBord', this.dutyRoom[i].id)
-      this.$router.push('./room')
     },
   },
 }
