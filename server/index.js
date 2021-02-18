@@ -47,7 +47,7 @@ async function start() {
   const server = app.listen(port, host)
   consola.ready({
     message: `Server listening on http://${host}:${port}`,
-    badge: true
+    badge: true,
   })
 
   const dutyRoom = []
@@ -63,11 +63,11 @@ async function start() {
       [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
       [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
       [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-      [3, 3, 3, 3, 3, 3, 3, 3]
+      [3, 3, 3, 3, 3, 3, 3, 3],
     ],
     gameFlag: false,
     ready: false,
-    moveOrder: null
+    moveOrder: null,
   }
 
   const userRoom = {}
@@ -113,7 +113,7 @@ async function start() {
       dutyRoom.push({
         id: roomingId(),
         number: null,
-        idKey: roomingId()
+        idKey: roomingId(),
       })
     })
   }
@@ -121,11 +121,11 @@ async function start() {
   const requestBord = (socket) => {
     socket.on('bordRequest', () => {
       dutyRoom.forEach(
-        (room, i) => (room.number = socket.adapter.rooms[dutyRoom[i].id])
+        (room, i) => room.number = socket.adapter.rooms[dutyRoom[i].id],
       )
 
       dutyRoom.forEach((room) =>
-        typeof room.number === 'undefined' ? (room.number = 0) : ''
+        typeof room.number === 'undefined' ? room.number = 0 : '',
       )
       socket.emit('res', dutyRoom)
     })

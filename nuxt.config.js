@@ -7,7 +7,7 @@ module.exports = {
   head: {
     title: 'online-reverse',
     htmlAttrs: {
-      lang: 'ja'
+      lang: 'ja',
     },
     meta: [
       { charset: 'utf-8' },
@@ -15,10 +15,10 @@ module.exports = {
       {
         hid: 'description',
         name: 'description',
-        content: process.env.npm_package_description || ''
-      }
+        content: process.env.npm_package_description || '',
+      },
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
   /*
    ** Customize the progress-bar color
@@ -34,8 +34,8 @@ module.exports = {
   plugins: [
     {
       src: '~plugins/persistedstate.js',
-      ssr: false
-    }
+      ssr: false,
+    },
   ],
   /*
    ** Nuxt.js dev-modules
@@ -43,7 +43,7 @@ module.exports = {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
-    '@nuxtjs/vuetify'
+    '@nuxtjs/vuetify',
   ],
 
   /*
@@ -59,6 +59,7 @@ module.exports = {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {}
-  }
+    
+    // extend(config, ctx) {},
+  },
 }

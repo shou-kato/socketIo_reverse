@@ -1,7 +1,13 @@
 <template>
   <v-main>
-    <v-container class="fill-height" fluid>
-      <v-row align="center" justify="center">
+    <v-container
+      class="fill-height"
+      fluid
+    >
+      <v-row
+        align="center"
+        justify="center"
+      >
         <v-col>
           <div>
             <v-row>
@@ -14,19 +20,32 @@
                     style="margin-left: -50px; margin-top: -50px;"
                     width="500"
                     height="500"
-                  ></canvas>
+                  />
                 </div>
               </v-col>
               <v-col cols="2">
-                <v-btn class="mb-7" @click="gameStart"
-                  >ここのボタンを押して準備完了にしてください
+                <v-btn
+                  class="mb-7"
+                  @click="gameStart"
+                >
+                  ここのボタンを押して準備完了にしてください
                 </v-btn>
-                <p v-if="!isReady">準備中</p>
-                <p v-else>準備完了</p>
+                <p v-if="!isReady">
+                  準備中
+                </p>
+                <p v-else>
+                  準備完了
+                </p>
                 <p>{{ moveOrder }}</p>
-                <p v-if="moveOrder === '先行'">あなたの石は黒です</p>
-                <p v-if="moveOrder === '後攻'">あなたの石は白です</p>
-                <p v-if="gameFlag">あなたの番です</p>
+                <p v-if="moveOrder === '先行'">
+                  あなたの石は黒です
+                </p>
+                <p v-if="moveOrder === '後攻'">
+                  あなたの石は白です
+                </p>
+                <p v-if="gameFlag">
+                  あなたの番です
+                </p>
               </v-col>
             </v-row>
           </div>
@@ -51,14 +70,14 @@ export default {
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-        [3, 3, 3, 3, 3, 3, 3, 3]
+        [3, 3, 3, 3, 3, 3, 3, 3],
       ],
       turn: 1,
       socket: io(),
       count: 0,
       gameFlag: false,
       isReady: false,
-      moveOrder: null
+      moveOrder: null,
     }
   },
   mounted() {
@@ -69,7 +88,7 @@ export default {
     this.mainProcess()
 
     this.socket.on('connected', () =>
-      this.socket.emit('joinRoom', this.$store.state.roomId)
+      this.socket.emit('joinRoom', this.$store.state.roomId),
     )
 
     this.socket.on('getBord', (reverseBord, flag) => {
@@ -82,7 +101,9 @@ export default {
       this.moveOrder = i[this.$store.state.numberOfPeople]
       if (this.moveOrder === '先行') this.gameFlag = true
     })
-    this.socket.on('flagCheck', () => this.socket.emit('isReady', this.isReady))
+    this.socket.on('flagCheck', () =>
+      this.socket.emit('isReady', this.isReady),
+    )
   },
   methods: {
     generateStage() {
@@ -160,7 +181,7 @@ export default {
 
         // 一度のひっくり返らな買った場合処理を止める。
         if (this.count === 0) {
-          return (this.reverseBord[yCoordinate][xCoordinate] = 0)
+          return this.reverseBord[yCoordinate][xCoordinate] = 0
         }
 
         // 石をひっくり返せた場合
@@ -205,7 +226,7 @@ export default {
       if (this.isReady) return
       this.socket.emit('gameStart', this.$store.state.roomId)
       this.isReady = true
-    }
-  }
+    },
+  },
 }
 </script>

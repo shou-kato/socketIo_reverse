@@ -1,6 +1,6 @@
 export const state = () => ({
   roomId: '',
-  numberOfPeople: ''
+  numberOfPeople: '',
 })
 
 export const mutations = {
@@ -9,5 +9,5 @@ export const mutations = {
   },
   numberManagement(state, payload) {
     state.numberOfPeople = payload
-  }
+  },
 }

@@ -8,7 +8,7 @@ export default ({ store, isHMR }) => {
   if (isHMR) return
 
   if (process.client) {
-    window.onNuxtReady((nuxt) => {
+    window.onNuxtReady(() => {
       createPersistedState({ storage: window.sessionStorage })(store) // vuex plugins can be connected to store, even after creation
     })
   }
