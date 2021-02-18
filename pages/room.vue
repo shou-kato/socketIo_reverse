@@ -153,6 +153,7 @@ export default {
         this.invertStone(yCoordinate, xCoordinate, -1, 0, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 0, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 0, -1, this.turn)
+        this.invertStone(yCoordinate, xCoordinate, 1, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, -1, -1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 1, -1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, -1, 1, this.turn)
