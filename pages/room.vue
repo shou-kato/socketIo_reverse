@@ -95,8 +95,8 @@ export default {
       const ctx = canvas.getContext('2d')
       const fillStone = (y, x) => {
         if (this.reverseBord[y][x] === 0) return 'rgba(0,0,0,0)'
-        if (this.reverseBord[y][x] === -1) return 'white'
-        if (this.reverseBord[y][x] === 1) return 'black'
+        if (this.reverseBord[y][x] === -1) return 'rgb(255, 255, 255)'
+        if (this.reverseBord[y][x] === 1) return 'rgb(0,0,0)'
         if (this.reverseBord[y][x] === 3) return 'rgba(0,0,0,0)'
       }
       for (let y = 0; y < 10; y++) {
@@ -114,8 +114,6 @@ export default {
        *  @param {Number} xCoordinate  見てる y座標
        */
       const canvas = document.getElementById('canvas')
-      // 先行後攻判断
-
       // 座標取得
       canvas.addEventListener('click', (e) => {
         const rect = e.target.getBoundingClientRect()
@@ -131,14 +129,13 @@ export default {
         if (this.moveOrder === '先行') this.turn = 1
         if (this.moveOrder === '後攻') this.turn = -1
 
-        this.invertStone(yCoordinate, xCoordinate, 0, 1, this.turn)
-        this.invertStone(yCoordinate, xCoordinate, 0, -1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 1, 0, this.turn)
         this.invertStone(yCoordinate, xCoordinate, -1, 0, this.turn)
+        this.invertStone(yCoordinate, xCoordinate, 0, 1, this.turn)
+        this.invertStone(yCoordinate, xCoordinate, 0, -1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, -1, -1, this.turn)
-        this.invertStone(yCoordinate, xCoordinate, 1, 1, this.turn)
-        this.invertStone(yCoordinate, xCoordinate, -1, 1, this.turn)
         this.invertStone(yCoordinate, xCoordinate, 1, -1, this.turn)
+        this.invertStone(yCoordinate, xCoordinate, -1, 1, this.turn)
 
         if (this.count === 0)
           return (this.reverseBord[yCoordinate][xCoordinate] = 0)
@@ -159,22 +156,25 @@ export default {
      * @param {Number} c  色
      */
     invertStone(y, x, dy, dx, c) {
-      // 石を同じ石で挟んでいる場合は終了
+      const transparent = 0
+
       if (this.reverseBord[y + dy][x + dx] === c) {
         this.reverseBord[y][x] = c
-        return 1
-      } else if (this.reverseBord[y + dy][x + dx] === -c) {
-        const n = this.invertStone(y + dy, x + dx, dy, dx, c)
-        // 石がない場合は終了
-        if (n === 0 || n === 3) {
-          return 0
+        return c
+      }
+
+      if (this.reverseBord[y + dy][x + dx] === -c) {
+        if (this.invertStone(y + dy, x + dx, dy, dx, c) === transparent) {
+          return transparent
         }
+
         this.reverseBord[y][x] = c
         this.count += 1
-        return n + 1
-      } else {
-        return 0
+
+        return this.invertStone(y + dy, x + dx, dy, dx, c)
       }
+
+      return transparent
     },
     gameStart() {
       if (this.isReady) return
