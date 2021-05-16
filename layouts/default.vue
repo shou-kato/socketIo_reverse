@@ -1,21 +1,14 @@
 <template>
   <div>
     <v-app id="inspire">
-      <v-app-bar
-        app
-        color="indigo"
-        dark
-      >
+      <v-app-bar app color="indigo" dark>
         <v-toolbar-title>reverse</v-toolbar-title>
       </v-app-bar>
       <nuxt />
-      <v-footer
-        color="indigo"
-        app
-      >
-        <span
-          class="white--text mx-auto"
-        >&copy; {{ new Date().getFullYear() }} sho kato</span>
+      <v-footer color="indigo" app>
+        <span class="white--text mx-auto"
+          >&copy; {{ new Date().getFullYear() }} sho kato</span
+        >
       </v-footer>
     </v-app>
   </div>
@@ -23,8 +16,8 @@
 
 <style>
 html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 16px;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;
